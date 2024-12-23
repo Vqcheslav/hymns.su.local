@@ -1,33 +1,16 @@
-<VirtualHost *:80>
-    ServerName hymns.online.local
-    ServerAlias hymns.online.local
 
-    # Uncomment the following line to force Apache to pass the Authorization
-    # header to PHP: required for "basic_auth" under PHP-FPM and FastCGI
-    #
-    # SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
+RewriteEngine On
+RewriteBase /
+RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
+RewriteRule ^ %1 [L,NE,R=302]
+RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
 
-    <FilesMatch \.php$>
-        # when using PHP-FPM as a unix socket
-        SetHandler proxy:unix:/var/run/php/php8.2-fpm.sock|fcgi://dummy
 
-        # when PHP-FPM is configured to use TCP
-        # SetHandler proxy:fcgi://127.0.0.1:9000
-    </FilesMatch>
+DirectoryIndex index.php
+ErrorDocument 403 /public/index.php?error=403
+ErrorDocument 404 /public/index.php?error=404
+ErrorDocument 500 /public/index.php?error=500
 
-    DocumentRoot /var/www/hymns.online.local/public
-    <Directory /var/www/hymns.online.local/public>
-        AllowOverride None
-        Require all granted
-        FallbackResource /index.php
-    </Directory>
 
-    # uncomment the following lines if you install assets as symlinks
-    # or run into problems when compiling LESS/Sass/CoffeeScript assets
-    # <Directory /var/www/hymns.online.local>
-    #     Options FollowSymlinks
-    # </Directory>
-
-    ErrorLog /var/www/hymns.online.local/.docker/apache/logs/local_error.log
-    CustomLog /var/www/hymns.online.local/.docker/apache/logs/local_access.log combined
-</VirtualHost>
+php_value display_errors On
+php_value date.timezone Europe/London
