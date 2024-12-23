@@ -1,0 +1,480 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "API Docs",
+    "description": "Documentation for API",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Books",
+      "description": "Operations about books"
+    },
+    {
+      "name": "Hymns",
+      "description": "Operations about hymns"
+    }
+  ],
+  "paths": {
+    "/books": {
+      "get": {
+        "tags": [
+          "Books"
+        ],
+        "summary": "Get books",
+        "description": "Returns books",
+        "operationId": "getBooks",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooksResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error: Internal Server Error. See ServerError in Schemas"
+          }
+        }
+      }
+    },
+    "/hymns/book/{book_id}/{start_number}/{end_number}": {
+      "get": {
+        "tags": [
+          "Hymns"
+        ],
+        "summary": "Get hymns by book id for list",
+        "description": "Returns hymns without verses (max: 500)",
+        "operationId": "getHymnsByBookId",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "required": true,
+            "example": "song-of-rebirth-3400"
+          },
+          {
+            "name": "start_number",
+            "in": "path",
+            "required": true,
+            "example": 1
+          },
+          {
+            "name": "end_number",
+            "in": "path",
+            "required": true,
+            "example": 100
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HymnsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error: Unprocessable Content. See UnprocessableEntity in Schemas"
+          },
+          "500": {
+            "description": "Error: Internal Server Error. See ServerError in Schemas"
+          }
+        }
+      }
+    },
+    "/hymns/verses/{book_id}/{start_number}/{end_number}": {
+      "get": {
+        "tags": [
+          "Hymns"
+        ],
+        "summary": "Get hymns by book id with verses",
+        "description": "Returns hymns with verses (max: 500)",
+        "operationId": "getHymnsWithVerses",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "required": true,
+            "example": "song-of-rebirth-3400"
+          },
+          {
+            "name": "start_number",
+            "in": "path",
+            "required": true,
+            "example": 1
+          },
+          {
+            "name": "end_number",
+            "in": "path",
+            "required": true,
+            "example": 100
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HymnsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error: Unprocessable Content. See UnprocessableEntity in Schemas"
+          },
+          "500": {
+            "description": "Error: Internal Server Error. See ServerError in Schemas"
+          }
+        }
+      }
+    },
+    "/hymns/{hymn_id}": {
+      "get": {
+        "tags": [
+          "Hymns"
+        ],
+        "summary": "Get hymn by hymn id",
+        "description": "Returns a hymn with verses",
+        "operationId": "getHymnByHymnId",
+        "parameters": [
+          {
+            "name": "hymn_id",
+            "in": "path",
+            "required": true,
+            "example": "1-slushaite-povest-lyubvi-v-prostote662bbfb9888335"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error: Unprocessable Content. See UnprocessableEntity in Schemas"
+          },
+          "500": {
+            "description": "Error: Internal Server Error. See ServerError in Schemas"
+          }
+        }
+      }
+    },
+    "/hymns/search/{search}": {
+      "get": {
+        "tags": [
+          "Hymns"
+        ],
+        "summary": "Get hymns by search request",
+        "description": "Returns hymns with verses that match this search request",
+        "operationId": "searchHymns",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HymnsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error: Unprocessable Content. See UnprocessableEntity in Schemas"
+          },
+          "500": {
+            "description": "Error: Internal Server Error. See ServerError in Schemas"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Book": {
+        "type": "object",
+        "properties": {
+          "book_id": {
+            "type": "string",
+            "example": "song-of-rebirth-3400"
+          },
+          "title": {
+            "type": "string",
+            "example": "Песнь Возрождения 3400"
+          },
+          "total_songs": {
+            "type": "integer",
+            "example": 3400
+          }
+        }
+      },
+      "Hymn": {
+        "type": "object",
+        "properties": {
+          "hymn_id": {
+            "type": "string",
+            "example": "1-slushaite-povest-lyubvi-v-prostote662bbfb9888335"
+          },
+          "book_id": {
+            "type": "string",
+            "example": "song-of-rebirth-3400"
+          },
+          "number": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Слушайте повесть любви в простоте"
+          },
+          "category": {
+            "type": "string",
+            "example": "Перед началом собрания"
+          },
+          "tone": {
+            "type": "string",
+            "example": "A"
+          },
+          "verses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Verse"
+            }
+          }
+        }
+      },
+      "Verse": {
+        "type": "object",
+        "properties": {
+          "verse_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "position": {
+            "type": "integer",
+            "example": 1
+          },
+          "is_chorus": {
+            "type": "boolean"
+          },
+          "lyrics": {
+            "type": "string",
+            "example": "Слушайте повесть любви в простоте, \nСлушайте дивный рассказ; \nБог нас навеки простил во Христе, \nБог нас от гибели спас."
+          },
+          "chords": {
+            "type": "string",
+            "example": "A; D; A; E; A;"
+          }
+        }
+      },
+      "BooksResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Book"
+            }
+          },
+          "status": {
+            "type": "integer",
+            "example": 200
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "HymnsResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Hymn"
+            }
+          },
+          "status": {
+            "type": "integer",
+            "example": 200
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "status": {
+            "type": "integer",
+            "example": 200
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "Unauthorized": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "default": false
+          },
+          "status": {
+            "type": "integer",
+            "example": 401
+          },
+          "detail": {
+            "type": "string",
+            "default": "Unauthenticated."
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "NotFound": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "default": false
+          },
+          "status": {
+            "type": "integer",
+            "example": 404
+          },
+          "detail": {
+            "type": "string",
+            "default": "The route could not be found."
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "Conflict": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "default": false
+          },
+          "status": {
+            "type": "integer",
+            "example": 409
+          },
+          "detail": {
+            "type": "string",
+            "default": "Conflict"
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "UnprocessableEntity": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "default": false
+          },
+          "status": {
+            "type": "integer",
+            "example": 422
+          },
+          "detail": {
+            "type": "string",
+            "default": "Invalid Parameters"
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "ServerError": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "default": false
+          },
+          "status": {
+            "type": "integer",
+            "example": 500
+          },
+          "detail": {
+            "type": "string",
+            "default": "Server Error"
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      }
+    },
+    "requestBodies": {},
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "name": "bearerAuth",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

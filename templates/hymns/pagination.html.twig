@@ -1,0 +1,15 @@
+<nav class="hymns-pagination" aria-label="Page navigation">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ page * resultsPerPage - resultsPerPage }} - {{ page * resultsPerPage }}
+    </button>
+    <ul class="dropdown-menu overflow-auto bg-body-tertiary">
+        {% for pageNumber in 1..((totalSongs / resultsPerPage)|round(0, 'ceil'))  %}
+            <li>
+                <a
+                    class="dropdown-item"
+                    href="{{ path('hymns', {'bookId': bookId, 'page': pageNumber}) }}"
+                >{{ pageNumber * resultsPerPage - resultsPerPage }} - {{ pageNumber * resultsPerPage }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>

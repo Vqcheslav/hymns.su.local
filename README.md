@@ -1,2 +1,2 @@
-# vqcheslav.local
-It's my website with my small projects
+# hymns.online
+It's a backend for the hymns project

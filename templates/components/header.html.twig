@@ -1,0 +1,50 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary w-100 position-fixed top-0 z-3">
+    <div class="container-fluid">
+        <a class="navbar-brand ms-3" href="{{ path('hymns') }}">
+            Гимны
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a
+                    class="nav-link {{ currentRouteName is same as('api.docs') ? 'active' : '' }}"
+                    href="{{ path('api.docs') }}"
+                >
+                    Документация
+                </a>
+                <div class="nav-item dropdown">
+                    <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (light)">
+                        <svg class="bi my-1 theme-icon-active"><use href="#sun-fill"></use></svg>
+                        <span class="d-lg-none ms-2" id="bd-theme-text">Изменить тему</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light" aria-pressed="true">
+                                <svg class="bi me-2 opacity-50"><use href="#sun-fill"></use></svg>
+                                Светлая
+                                <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                                <svg class="bi me-2 opacity-50"><use href="#moon-stars-fill"></use></svg>
+                                Темная
+                                <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
+                                <svg class="bi me-2 opacity-50"><use href="#circle-half"></use></svg>
+                                Авто
+                                <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

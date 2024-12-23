@@ -1,0 +1,236 @@
+body {
+    font-family: Manrope, Arial, serif;
+}
+
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1920px;
+}
+
+.bi {
+    width: 1em;
+    height: 1em;
+    vertical-align: -.125em;
+    fill: currentcolor;
+}
+
+.footer {
+    margin-top: auto;
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(110.72deg, rgba(0, 0, 0, 0.2), rgba(19, 19, 19, 0.8));
+    backdrop-filter: blur(35px);
+}
+
+.footer .footer-p {
+    margin: 0;
+    font: normal normal normal 1rem/1.4rem Manrope;
+    color: #ffffff;
+    text-align: center;
+}
+
+/* start of scrollbar */
+.new-scrollbar::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+}
+
+.new-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 9px 9px 9px 9px;
+}
+
+.new-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 9px;
+    border: 1px solid rgb(129, 130, 131);
+}
+/* end of scrollbar */
+
+/* start of form elements */
+.form-control:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 50px var(--bs-body-bg) inset;
+    -webkit-text-fill-color: var(--bs-body-color);
+}
+
+.form-control:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 50px var(--bs-body-bg) inset;
+    -webkit-text-fill-color: var(--bs-body-color);
+}
+
+.form-input {
+}
+
+.form-select {
+    padding: 13px 13px 13px 61px;
+    font: normal normal normal 18px/24px Manrope;
+    letter-spacing: 0;
+    color: var(--bs-body-color);
+    border: none;
+    border-radius: 11px;
+    outline: none;
+    background: url("/img/components/edit.svg") no-repeat 18px center, var(--bs-body-bg);
+    background-size: 20px;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 50px;
+}
+
+.form-select.nice-select {
+    outline: none;
+    box-shadow: none;
+}
+
+.form-select.nice-select.open {
+    border-radius: 11px 11px 0 0;
+    background: url("/img/components/edit_hover.svg") no-repeat 18px center, #ffffff;
+    background-size: 20px;
+}
+
+.form-select.nice-select:after {
+    border-bottom: none;
+    border-right: none;
+    right: 29px;
+    background: url("/img/components/arrow.svg") no-repeat center;
+    background-size: cover;
+    width: 14px;
+    height: 14px;
+    transform: none;
+    transform-origin: inherit;
+    margin-top: -7px;
+}
+
+.form-select.nice-select.open:after {
+    transform: rotate(180deg);
+}
+
+.form-select.nice-select .nice-select-dropdown {
+    width: 100%;
+    border-radius: 0 0 11px 11px;
+    margin-top: 0;
+}
+
+.form-select.nice-select .list {
+    margin: 0;
+}
+
+.form-select.nice-select .option {
+    padding: 5px 5px 5px 61px;
+    line-height: inherit;
+    border-radius: 11px;
+    background: #ffffff url("/img/components/edit.svg") no-repeat 19px center;
+    background-size: 20px;
+}
+
+.form-select.nice-select .option:hover {
+    padding: 5px 5px 5px 68px;
+    background: #ffffff url("/img/components/edit_hover.svg") no-repeat 19px center;
+    background-size: 20px;
+}
+
+.form-select.nice-select .option.selected {
+    display: none;
+}
+
+.button {
+    padding: 18px 26px;
+    background-color: #eef0f5;
+    border: none;
+    border-radius: 12px;
+    outline: none;
+    font: normal normal 600 18px/16px Manrope;
+    box-shadow: 0 7px 11px #acacac56;
+    transition: all 0.3s ease-in-out;
+}
+/* end of form elements */
+
+/* start of general styles */
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+mark {
+    padding: 0;
+}
+
+.d-none-important {
+    display: none !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.fs-7 {
+    font-size: 0.9rem;
+}
+
+.animation-appear {
+    animation: appear 0.6s;
+}
+
+.animation-disappear {
+    animation: disappear 1s;
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes disappear {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+/* end of general styles */
+
+/* start of component */
+.toast.fixed-bottom {
+    margin: 5rem;
+}
+/* end of component */
+
+@media (max-width: 575.98px) {
+    .navbar-nav {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .footer .footer-p {
+        font-size: 14px;
+    }
+
+    .button {
+        padding: 13px;
+        font: normal normal 600 16px/16px Manrope;
+    }
+
+    .toast.fixed-bottom {
+        margin: 0 0 70px 0;
+    }
+}
+
+@media (max-width: 399.98px) {
+    .form-input {
+        font-size: 1rem;
+    }
+}

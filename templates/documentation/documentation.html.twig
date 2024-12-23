@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block description %}Документация{% endblock %}
+
+{% block title %}Документация{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
+    <style>
+        .parameters input {
+          color: black;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5 pt-3 p-lg-5 p-sm-3 bg-light">
+        <div id="swagger-ui"></div>
+        <div class="text-center">
+            {{ phpVersion }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js" crossorigin></script>
+    <script>
+        window.onload = () => {
+            window.ui = SwaggerUIBundle({
+                url: '/json/openapi.json?version=1.4',
+                dom_id: '#swagger-ui',
+            });
+        };
+    </script>
+{% endblock %}
