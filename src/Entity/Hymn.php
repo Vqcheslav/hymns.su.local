@@ -2,51 +2,34 @@
 
 namespace App\Entity;
 
-use App\Repository\HymnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=HymnRepository::class)
- */
+#[ORM\Entity(repositoryClass: "HymnRepository")]
 class Hymn
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="ascii_string", length=50)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: "ascii_string", length: 50)]
     private ?string $hymnId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Book::class, inversedBy="hymns")
-     * @ORM\JoinColumn(nullable=false, referencedColumnName="book_id")
-     */
+    #[ORM\ManyToOne(targetEntity: "Book", inversedBy: "hymns")]
+    #[ORM\JoinColumn(referencedColumnName: "book_id", nullable: false)]
     private ?Book $book;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: "integer")]
     private ?int $number;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: "string", length: 255)]
     private ?string $title;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: "string", length: 255)]
     private ?string $category;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    #[ORM\Column(type: "string", length: 50)]
     private ?string $tone;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Verse::class, mappedBy="hymn", orphanRemoval=true)
-     */
+    #[ORM\OneToMany(mappedBy: "hymn", targetEntity: "Verse", orphanRemoval: true)]
     private $verses;
 
     public function __construct()

@@ -2,45 +2,30 @@
 
 namespace App\Entity;
 
-use App\Repository\VerseRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=VerseRepository::class)
- */
+#[ORM\Entity(repositoryClass: "VerseRepository")]
 class Verse
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
     private ?int $verseId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Hymn::class, inversedBy="verses")
-     * @ORM\JoinColumn(nullable=false, referencedColumnName="hymn_id")
-     */
+    #[ORM\ManyToOne(targetEntity: "Hymn", inversedBy: "verses")]
+    #[ORM\JoinColumn(referencedColumnName: "hymn_id", nullable: false)]
     private ?Hymn $hymn;
 
-    /**
-     * @ORM\Column(type="smallint")
-     */
+    #[ORM\Column(type: "smallint")]
     private ?int $position;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: "boolean")]
     private ?bool $isChorus;
 
-    /**
-     * @ORM\Column(type="string", length=500)
-     */
+    #[ORM\Column(type: "string", length: 500)]
     private ?string $lyrics;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: "string", length: 255)]
     private ?string $chords;
 
     public function getVerseId(): ?int

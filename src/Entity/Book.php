@@ -2,35 +2,24 @@
 
 namespace App\Entity;
 
-use App\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=BookRepository::class)
- */
+#[ORM\Entity(repositoryClass: "BookRepository")]
 class Book
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: "string", length: 255)]
     private ?string $bookId;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: "string", length: 255)]
     private ?string $title;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Hymn::class, mappedBy="book", orphanRemoval=true)
-     */
+    #[ORM\OneToMany(mappedBy: "book", targetEntity: "Hymn", orphanRemoval: true)]
     private ?object $hymns;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: "integer")]
     private ?int $totalSongs;
 
     public function __construct()

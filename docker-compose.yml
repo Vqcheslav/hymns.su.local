@@ -6,7 +6,7 @@ services:
         volumes:
             - "./.docker/nginx/local.conf:/etc/nginx/conf.d/local.conf"
             - "./.docker/nginx/logs/:/var/log/nginx/"
-            - "./:/var/www/hymns.online.local/"
+            - "./:/var/www/hymns.su.local/"
         links:
             - php-fpm
 
@@ -16,31 +16,32 @@ services:
             - "./.docker/php-fpm/local.ini:/usr/local/etc/php/conf.d/40-local.ini"
             - "./.docker/php-fpm/fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
             - "./.docker/php-fpm/logs/:/var/log/"
-            - "./:/var/www/hymns.online.local/"
+            - "./:/var/www/hymns.su.local/"
         links:
             - mysql
             - redis
 
     mysql:
         image: mysql:8
-        hostname: hymns.online.local
+        hostname: hymns.su.local
         ports:
             - "3306:3306"
         volumes:
             - "./.docker/mysql/logs/:/var/log/mysql/"
-            - "./.docker/mysql/data/:/var/lib/mysql/"
+#            - "./.docker/mysql/data/:/var/lib/mysql/"
             - "./.docker/mysql/setup.sql:/docker-entrypoint-initdb.d/1.sql"
+#        command: --mysql-native-password=ON
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: false
             MYSQL_ROOT_USER: root
-            MYSQL_ROOT_PASSWORD: hymns.online_Root_Pass
-            MYSQL_DATABASE: hymns.online_db
-            MYSQL_USER: hymns.online_user
-            MYSQL_PASSWORD: hymns.online_Pass
+            MYSQL_ROOT_PASSWORD: hymns_Root_Pass
+            MYSQL_DATABASE: hymns_db
+            MYSQL_USER: hymns_user
+            MYSQL_PASSWORD: hymns_Pass
 
     redis:
         image: redis:7-alpine
-        hostname: hymns.online.local
+        hostname: hymns.su.local
         ports:
             - "6379:6379"
         volumes:
