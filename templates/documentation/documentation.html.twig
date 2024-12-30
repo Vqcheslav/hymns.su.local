@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block description %}Документация{% endblock %}
+{% block description %}Гимны: Документация{% endblock %}
 
-{% block title %}Документация{% endblock %}
+{% block title %}Гимны: Документация{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.18.2/swagger-ui.css" />
     <style>
         .parameters input {
           color: black;
@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container mt-5 pt-3 p-lg-5 p-sm-3 bg-light">
+    <div class="container mt-5 pt-3 pb-3 bg-light">
         <div id="swagger-ui"></div>
         <div class="text-center">
             {{ phpVersion }}
@@ -23,7 +23,7 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js" crossorigin></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.18.2/swagger-ui-bundle.js" crossorigin></script>
     <script>
         window.onload = () => {
             window.ui = SwaggerUIBundle({

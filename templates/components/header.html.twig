@@ -1,6 +1,13 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary w-100 position-fixed top-0 z-3">
+<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom fixed-top">
     <div class="container-fluid">
-        <a class="navbar-brand ms-3" href="{{ path('hymns') }}">
+        <a class="navbar-brand" href="{{ path('hymns') }}">
+            <img
+                class="d-inline-block align-text-top rounded me-2"
+                src="{{ asset('img/hymns/favicon.png') }}"
+                alt="Logo"
+                width="30"
+                height="30"
+            >
             Гимны
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
@@ -8,7 +15,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
+            <div class="navbar-nav my-3 my-lg-0">
                 <a
                     class="nav-link {{ currentRouteName is same as('api.docs') ? 'active' : '' }}"
                     href="{{ path('api.docs') }}"

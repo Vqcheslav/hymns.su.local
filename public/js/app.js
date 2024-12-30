@@ -20,22 +20,6 @@ function fallbackCopyTextToClipboard (text) {
     document.body.removeChild(textArea)
 }
 
-function clickButtonToCopy () {
-    document.querySelectorAll('.copy-to-buffer').forEach(function (element) {
-        element.addEventListener('click', async function () {
-            let text = this.dataset.buffer
-            console.log(text)
-            await copyText(text)
-
-            Toast.showToastMessageWithTimeout(
-                'Успех',
-                'Данные успешно скопированы: ' + text,
-                'success',
-            )
-        })
-    })
-}
-
 function setLoaderAndGetRemovingFunction (selectorOrElement) {
     let loader = '...'
     let element = typeof selectorOrElement === 'string'

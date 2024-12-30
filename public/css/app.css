@@ -2,12 +2,6 @@ body {
     font-family: Manrope, Arial, serif;
 }
 
-.container {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 1920px;
-}
-
 .bi {
     width: 1em;
     height: 1em;
@@ -15,22 +9,12 @@ body {
     fill: currentcolor;
 }
 
-.footer {
-    margin-top: auto;
-    height: 50px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(110.72deg, rgba(0, 0, 0, 0.2), rgba(19, 19, 19, 0.8));
-    backdrop-filter: blur(35px);
+mark {
+    padding: 0;
 }
 
-.footer .footer-p {
-    margin: 0;
-    font: normal normal normal 1rem/1.4rem Manrope;
-    color: #ffffff;
-    text-align: center;
+.fs-7 {
+    font-size: 0.9rem;
 }
 
 /* start of scrollbar */
@@ -60,9 +44,6 @@ body {
 .form-control:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0 50px var(--bs-body-bg) inset;
     -webkit-text-fill-color: var(--bs-body-color);
-}
-
-.form-input {
 }
 
 .form-select {
@@ -136,44 +117,9 @@ body {
 .form-select.nice-select .option.selected {
     display: none;
 }
-
-.button {
-    padding: 18px 26px;
-    background-color: #eef0f5;
-    border: none;
-    border-radius: 12px;
-    outline: none;
-    font: normal normal 600 18px/16px Manrope;
-    box-shadow: 0 7px 11px #acacac56;
-    transition: all 0.3s ease-in-out;
-}
 /* end of form elements */
 
 /* start of general styles */
-.hide {
-    display: none;
-}
-
-.show {
-    display: block;
-}
-
-mark {
-    padding: 0;
-}
-
-.d-none-important {
-    display: none !important;
-}
-
-.cursor-pointer {
-    cursor: pointer;
-}
-
-.fs-7 {
-    font-size: 0.9rem;
-}
-
 .animation-appear {
     animation: appear 0.6s;
 }
@@ -210,27 +156,7 @@ mark {
 /* end of component */
 
 @media (max-width: 575.98px) {
-    .navbar-nav {
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-    .footer .footer-p {
-        font-size: 14px;
-    }
-
-    .button {
-        padding: 13px;
-        font: normal normal 600 16px/16px Manrope;
-    }
-
     .toast.fixed-bottom {
         margin: 0 0 70px 0;
-    }
-}
-
-@media (max-width: 399.98px) {
-    .form-input {
-        font-size: 1rem;
     }
 }

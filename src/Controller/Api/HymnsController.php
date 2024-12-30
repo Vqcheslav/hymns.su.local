@@ -5,7 +5,7 @@ namespace App\Controller\Api;
 use App\Controller\Controller;
 use App\Service\HymnService;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class HymnsController extends  Controller
 {

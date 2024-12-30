@@ -4,8 +4,9 @@ namespace App\Controller;
 
 use App\Service\BookService;
 use App\Service\HymnService;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class HymnsController extends Controller
 {
@@ -43,5 +44,13 @@ class HymnsController extends Controller
             'books'          => $booksResultDto->getData(),
             'hymns'          => $hymnsResultDto->getData(),
         ]);
+    }
+
+    #[Route("/hymns/book/{bookId}/{page<\d+>}", name: "hymns.redirect", methods: ["GET", "HEAD"])]
+    public function redirectToIndex(string $bookId = self::DEFAULT_BOOK, int $page = 1): RedirectResponse
+    {
+        return $this->redirect(
+            $this->generateUrl('hymns', ['bookId' => $bookId, 'page' => $page])
+        );
     }
 }
