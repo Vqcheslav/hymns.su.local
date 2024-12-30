@@ -14,7 +14,9 @@ use Throwable;
 
 class HymnService extends Service
 {
-    public const SEARCH_RESULTS_LIMIT = 30;
+    public const int SEARCH_RESULTS_LIMIT = 30;
+
+    public const int HYMNS_WITH_VERSES_LIMIT = 1200;
 
     private SluggerInterface $slugger;
 
@@ -34,7 +36,7 @@ class HymnService extends Service
         VerseRepository $verseRepository,
         HymnNormalizer $hymnNormalizer,
         VerseNormalizer $verseNormalizer,
-        BookService $bookService
+        BookService $bookService,
     ) {
         $this->slugger = $slugger;
         $this->hymnRepository = $hymnRepository;
@@ -56,7 +58,8 @@ class HymnService extends Service
     public function getHymnsWithVerses(string $bookId, int $startNumber, int $endNumber): ResultDto
     {
         $bookId = $this->bookService->getCorrectBookId($bookId, $endNumber);
-        $hymns = $this->hymnRepository->getHymnsWithVerses($bookId, $startNumber, $endNumber);
+        $hymns = $this->hymnRepository
+            ->getHymnsWithVerses($bookId, $startNumber, $endNumber, self::HYMNS_WITH_VERSES_LIMIT);
         $hymns = $this->hymnNormalizer->normalizeArrayWithVerses($hymns);
 
         return $this->makeResultDto(true, $hymns, 'Successfully retrieved hymns');
@@ -122,9 +125,8 @@ class HymnService extends Service
         int $number,
         string $title,
         string $tone,
-        bool $flush = true
-    ): Hymn
-    {
+        bool $flush = true,
+    ): Hymn {
         $categoryName = '';
 
         foreach ($categories as $category) {
@@ -143,9 +145,8 @@ class HymnService extends Service
         string $category,
         string $tone,
         bool $flush = true,
-        ?string $hymnId = null
-    ): Hymn
-    {
+        ?string $hymnId = null,
+    ): Hymn {
         if ($hymnId === null) {
             $uniqId = uniqid('', true) . uniqid('', true);
             $uniqId = str_replace(['.', '666'], ['', '555'], $uniqId);

@@ -52,7 +52,7 @@
           "Hymns"
         ],
         "summary": "Get hymns by book id for list",
-        "description": "Returns hymns without verses (max: 500)",
+        "description": "Returns hymns without verses (max: 400)",
         "operationId": "getHymnsByBookId",
         "parameters": [
           {
@@ -71,7 +71,7 @@
             "name": "end_number",
             "in": "path",
             "required": true,
-            "example": 100
+            "example": 400
           }
         ],
         "responses": {
@@ -100,7 +100,7 @@
           "Hymns"
         ],
         "summary": "Get hymns by book id with verses",
-        "description": "Returns hymns with verses (max: 500)",
+        "description": "Returns hymns with verses (max: 200)",
         "operationId": "getHymnsWithVerses",
         "parameters": [
           {
@@ -119,7 +119,7 @@
             "name": "end_number",
             "in": "path",
             "required": true,
-            "example": 100
+            "example": 200
           }
         ],
         "responses": {
