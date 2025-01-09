@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
+use App\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: "BookRepository")]
+#[ORM\Entity(repositoryClass: BookRepository::class)]
 class Book
 {
     #[ORM\Id]
@@ -16,7 +17,7 @@ class Book
     #[ORM\Column(type: "string", length: 255)]
     private ?string $title;
 
-    #[ORM\OneToMany(mappedBy: "book", targetEntity: "Hymn", orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: "book", targetEntity: Hymn::class, orphanRemoval: true)]
     private ?object $hymns;
 
     #[ORM\Column(type: "integer")]
@@ -32,7 +33,7 @@ class Book
         return $this->bookId;
     }
 
-    public function setId(?string $bookId): self
+    public function setBookId(?string $bookId): self
     {
         $this->bookId = $bookId;
 
@@ -91,5 +92,10 @@ class Book
         $this->totalSongs = $totalSongs;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->bookId;
     }
 }

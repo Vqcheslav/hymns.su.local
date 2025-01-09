@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'app.html.twig' %}
 
 {% block description %}Песнь Возрождения ЕХвДа, Песнь Возрождения 3400, Сборник песен Демянск и Пользовательский сборник. Поиск осуществляется по всем сборникам{% endblock %}
 
@@ -27,7 +27,7 @@
     <link href="{{ asset('css/hymns/hymns.css?version=1.2') }}" rel="stylesheet">
 {% endblock %}
 
-{% block body %}
+{% block main %}
     <div id="hymnsDiv" class="container mt-5 mb-3">
         <form id="searchHymnsForm" class="pt-5">
             <h1 class="h1">Сборники гимнов</h1>

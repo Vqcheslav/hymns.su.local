@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'app.html.twig' %}
 
 {% block description %}Гимны: Документация{% endblock %}
 
@@ -13,10 +13,10 @@
     </style>
 {% endblock %}
 
-{% block body %}
+{% block main %}
     <div class="container mt-5 pt-3 pb-3 bg-light">
         <div id="swagger-ui"></div>
-        <div class="text-center">
+        <div class="text-center text-black">
             {{ phpVersion }}
         </div>
     </div>

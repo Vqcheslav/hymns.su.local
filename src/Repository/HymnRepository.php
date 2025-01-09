@@ -127,4 +127,15 @@ class HymnRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getHymnCategoriesByBookId(string $bookId)
+    {
+        return $this->createQueryBuilder('h')
+            ->select('DISTINCT h.category')
+            ->andWhere('h.book = :bookId')
+            ->orderBy('h.category', 'ASC')
+            ->setParameter('bookId', $bookId)
+            ->getQuery()
+            ->getResult();
+    }
 }

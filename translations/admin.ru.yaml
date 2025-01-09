@@ -1,0 +1,57 @@
+Autopart: Объект Автозапчасть
+Title: Заголовок
+Description: Описание
+Dashboard: Админ-панель
+autocomplete.no-more-results: Нет больше результатов
+Autoparts: Автозапчасти
+Users: Пользователи
+User: Объект Пользователь
+AutopartOrders: Заказы
+AutopartOrder: Объект Заказ
+Autopart Id: Id Автозапчасти
+Back to the website: Вернуться на сайт
+Amount: Количество
+Status: Статус
+Cars: Автомобили
+Car: Объект Автомобиль
+Warehouses: Склады
+Warehouse: Объект Склад
+Address: Адрес
+Opening Hours: Часы работы
+Working Days: Дни работы
+Phone Number: Номер телефона
+Manufacturer: Объект Производитель
+Manufacturers: Производители
+manufacturer: Производитель
+Country: Страна
+Model: Модель
+Brand: Бренд
+Generation: Поколение
+Year: Год
+Engine: Двигатель
+Updated At: Обновлен
+Created At: Создан
+Name: Фамилия, имя
+Email: Эл. почта
+Roles: Права доступа
+Favorites: Избранное
+Favorite: Объект Избранное
+Cart: Объект Корзина
+Carts: Корзины
+Books: Книги
+Book: Объект Книга
+Book Id: Id Книги
+Total Songs: Всего песен
+Hymns: Гимны
+Hymn: Объект Гимн
+Hymn Id: Id Гимна
+Number: Номер
+Category: Категория
+Tone: Тон
+Verses: Куплеты
+Verse: Объект Куплет
+Verse Id: Id Куплета
+Position: Позиция
+Is Chorus: Припев
+Lyrics: Текст
+Chords: Аккорды

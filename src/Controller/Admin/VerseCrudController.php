@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Controller\Admin;
+
+use App\Entity\Hymn;
+use App\Entity\Verse;
+use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+
+class VerseCrudController extends AbstractCrudController
+{
+    public function __construct() {}
+
+    public static function getEntityFqcn(): string
+    {
+        return Verse::class;
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud->setDefaultSort(['verseId' => 'ASC']);
+    }
+
+    public function configureFields(string $pageName): iterable
+    {
+        return [
+            IdField::new('verseId')
+                ->setLabel('Verse Id')
+                ->hideOnForm()
+                ->setSortable(true),
+            AssociationField::new('hymn')
+                ->setLabel('Hymn Id'),
+            NumberField::new('position'),
+            BooleanField::new('isChorus'),
+            TextareaField::new('lyrics'),
+            TextareaField::new('chords')
+                ->hideOnIndex()
+                ->setRequired(false)
+                ->setEmptyData(''),
+        ];
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /* @var Verse $entityInstance */
+        $hymn = $entityInstance->getHymn();
+
+        if ($hymn instanceof Hymn) {
+            $hymn->setUpdatedAt(new DateTimeImmutable());
+            $entityManager->persist($hymn);
+        }
+
+        $entityManager->persist($entityInstance);
+        $entityManager->flush();
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /* @var Verse $entityInstance */
+        $hymn = $entityInstance->getHymn();
+
+        if ($hymn instanceof Hymn) {
+            $hymn->setUpdatedAt(new DateTimeImmutable());
+            $entityManager->persist($hymn);
+        }
+
+        $entityManager->persist($entityInstance);
+        $entityManager->flush();
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /* @var Verse $entityInstance */
+        $hymn = $entityInstance->getHymn();
+
+        if ($hymn instanceof Hymn) {
+            $hymn->setUpdatedAt(new DateTimeImmutable());
+            $entityManager->persist($hymn);
+        }
+
+        $entityManager->remove($entityInstance);
+        $entityManager->flush();
+    }
+}

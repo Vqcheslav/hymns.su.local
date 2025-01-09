@@ -2,18 +2,21 @@
 
 namespace App\Entity;
 
+use App\Repository\HymnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: "HymnRepository")]
+#[ORM\Entity(repositoryClass: HymnRepository::class)]
+#[ORM\UniqueConstraint(fields: ['book', 'number'])]
+#[ORM\Index(fields: ['category'])]
 class Hymn
 {
     #[ORM\Id]
     #[ORM\Column(type: "ascii_string", length: 50)]
     private ?string $hymnId;
 
-    #[ORM\ManyToOne(targetEntity: "Book", inversedBy: "hymns")]
+    #[ORM\ManyToOne(targetEntity: Book::class, inversedBy: "hymns")]
     #[ORM\JoinColumn(referencedColumnName: "book_id", nullable: false)]
     private ?Book $book;
 
@@ -29,8 +32,11 @@ class Hymn
     #[ORM\Column(type: "string", length: 50)]
     private ?string $tone;
 
-    #[ORM\OneToMany(mappedBy: "hymn", targetEntity: "Verse", orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: "hymn", targetEntity: Verse::class, orphanRemoval: true)]
     private $verses;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function __construct()
     {
@@ -42,7 +48,7 @@ class Hymn
         return $this->hymnId;
     }
 
-    public function setId(?string $hymnId): self
+    public function setHymnId(?string $hymnId): self
     {
         $this->hymnId = $hymnId;
 
@@ -119,7 +125,7 @@ class Hymn
 
     public function addVerse(Verse $verse): self
     {
-        if (!$this->verses->contains($verse)) {
+        if ( ! $this->verses->contains($verse)) {
             $this->verses[] = $verse;
             $verse->setHymn($this);
         }
@@ -137,5 +143,22 @@ class Hymn
         }
 
         return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->hymnId;
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
+use App\Repository\VerseRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: "VerseRepository")]
+#[ORM\Entity(repositoryClass: VerseRepository::class)]
 class Verse
 {
     #[ORM\Id]
@@ -12,7 +13,7 @@ class Verse
     #[ORM\Column(type: "integer")]
     private ?int $verseId;
 
-    #[ORM\ManyToOne(targetEntity: "Hymn", inversedBy: "verses")]
+    #[ORM\ManyToOne(targetEntity: Hymn::class, inversedBy: "verses")]
     #[ORM\JoinColumn(referencedColumnName: "hymn_id", nullable: false)]
     private ?Hymn $hymn;
 
@@ -62,7 +63,7 @@ class Verse
         return $this->isChorus;
     }
 
-    public function setChorus(bool $isChorus): self
+    public function setIsChorus(bool $isChorus): self
     {
         $this->isChorus = $isChorus;
 

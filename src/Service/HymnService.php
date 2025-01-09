@@ -119,6 +119,13 @@ class HymnService extends Service
         return array_values($result);
     }
 
+    public function getHymnCategoriesByBookId(string $bookId): ResultDto
+    {
+        $result = $this->hymnRepository->getHymnCategoriesByBookId($bookId);
+
+        return $this->makeResultDto(true, $result, 'Successfully retrieved hymn categories');
+    }
+
     public function parseAndCreateHymn(
         Book $book,
         array $categories,
@@ -138,6 +145,15 @@ class HymnService extends Service
         return $this->createHymn($book, $number, $title, $categoryName, $tone, $flush);
     }
 
+    public function generateHymnId(int $number, string $title): string
+    {
+        $uniqId = uniqid('', true) . uniqid('', true);
+        $uniqId = str_replace(['.', '666'], ['', '555'], $uniqId);
+        $string = sprintf('%s-%s', $number, mb_substr($title, 0, 35));
+
+        return mb_strtolower(mb_substr($this->slugger->slug($string) . $uniqId, 0, 50));
+    }
+
     public function createHymn(
         Book $book,
         int $number,
@@ -148,14 +164,11 @@ class HymnService extends Service
         ?string $hymnId = null,
     ): Hymn {
         if ($hymnId === null) {
-            $uniqId = uniqid('', true) . uniqid('', true);
-            $uniqId = str_replace(['.', '666'], ['', '555'], $uniqId);
-            $string = sprintf('%s-%s', $number, mb_substr($title, 0, 35));
-            $hymnId = mb_strtolower(mb_substr($this->slugger->slug($string) . $uniqId, 0, 50));
+            $hymnId = $this->generateHymnId($number, $title);
         }
 
         $hymn = new Hymn();
-        $hymn->setId($hymnId)
+        $hymn->setHymnId($hymnId)
             ->setBook($book)
             ->setNumber($number)
             ->setTitle(trim($title))
