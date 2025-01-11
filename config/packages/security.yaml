@@ -22,7 +22,7 @@ security:
                 check_path: app_login
 
             logout:
-                path: /logout
+                path: /user/logout
                 target: hymns
 
             # activate different ways to authenticate
@@ -34,9 +34,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: '^/admin/login', roles: [] }
         - { path: '^/admin', roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
     security:
