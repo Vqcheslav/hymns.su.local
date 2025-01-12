@@ -32,7 +32,7 @@ class HymnCrudController extends AbstractCrudController
     {
         return $crud
             ->renderContentMaximized()
-            ->setDefaultSort(['updatedAt' => 'ASC'])
+            ->setDefaultSort(['updatedAt' => 'DESC'])
             ->setSearchFields(['book.bookId', 'number', 'title', 'category']);
     }
 

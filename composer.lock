@@ -1410,16 +1410,16 @@
         },
         {
             "name": "easycorp/easyadmin-bundle",
-            "version": "v4.20.8",
+            "version": "v4.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
-                "reference": "4fdc48db1c7a15ca8a27ecaeba9cce51c97f1965"
+                "reference": "c0da0bf125be98d3482b6c440e363532d871f7a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/4fdc48db1c7a15ca8a27ecaeba9cce51c97f1965",
-                "reference": "4fdc48db1c7a15ca8a27ecaeba9cce51c97f1965",
+                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/c0da0bf125be98d3482b6c440e363532d871f7a1",
+                "reference": "c0da0bf125be98d3482b6c440e363532d871f7a1",
                 "shasum": ""
             },
             "require": {
@@ -1466,7 +1466,8 @@
                 "symfony/dom-crawler": "^5.4|^6.0|^7.0",
                 "symfony/expression-language": "^5.4|^6.0|^7.0",
                 "symfony/phpunit-bridge": "^6.1|^7.0",
-                "symfony/process": "^5.4|^6.0|^7.0"
+                "symfony/process": "^5.4|^6.0|^7.0",
+                "symfony/web-link": "^5.4|^6.0|^7.0"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -1498,7 +1499,7 @@
             ],
             "support": {
                 "issues": "https://github.com/EasyCorp/EasyAdminBundle/issues",
-                "source": "https://github.com/EasyCorp/EasyAdminBundle/tree/v4.20.8"
+                "source": "https://github.com/EasyCorp/EasyAdminBundle/tree/v4.21.0"
             },
             "funding": [
                 {
@@ -1506,7 +1507,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-09T20:44:17+00:00"
+            "time": "2025-01-12T11:03:13+00:00"
         },
         {
             "name": "egulias/email-validator",
