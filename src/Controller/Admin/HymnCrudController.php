@@ -13,7 +13,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use RuntimeException;
@@ -31,7 +30,10 @@ class HymnCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud->setDefaultSort(['number' => 'ASC']);
+        return $crud
+            ->renderContentMaximized()
+            ->setDefaultSort(['updatedAt' => 'ASC'])
+            ->setSearchFields(['book.bookId', 'number', 'title', 'category']);
     }
 
     public function configureActions(Actions $actions): Actions
@@ -48,7 +50,7 @@ class HymnCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('hymnId')
+            TextField::new('hymnId')
                 ->setLabel('Hymn Id')
                 ->setDisabled()
                 ->hideWhenCreating(),

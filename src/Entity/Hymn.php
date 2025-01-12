@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Hymn
 {
     #[ORM\Id]
-    #[ORM\Column(type: "ascii_string", length: 50)]
+    #[ORM\Column(type: "string", length: 50)]
     private ?string $hymnId;
 
     #[ORM\ManyToOne(targetEntity: Book::class, inversedBy: "hymns")]
@@ -33,7 +33,7 @@ class Hymn
     private ?string $tone;
 
     #[ORM\OneToMany(mappedBy: "hymn", targetEntity: Verse::class, orphanRemoval: true)]
-    private $verses;
+    private ?object $verses;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;

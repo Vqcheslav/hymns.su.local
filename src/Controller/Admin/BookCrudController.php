@@ -7,7 +7,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
@@ -20,7 +19,9 @@ class BookCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud->setDefaultSort(['totalSongs' => 'DESC']);
+        return $crud
+            ->renderContentMaximized()
+            ->setDefaultSort(['totalSongs' => 'DESC']);
     }
 
     public function configureActions(Actions $actions): Actions
@@ -34,7 +35,7 @@ class BookCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('bookId'),
+            TextField::new('bookId'),
             TextField::new('title'),
             NumberField::new('totalSongs')->setEmptyData(0),
         ];
