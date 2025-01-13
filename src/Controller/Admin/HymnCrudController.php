@@ -13,7 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use RuntimeException;
 
@@ -57,7 +57,7 @@ class HymnCrudController extends AbstractCrudController
             AssociationField::new('book')
                 ->setLabel('Book Id')
                 ->hideOnForm(),
-            NumberField::new('number')
+            IntegerField::new('number')
                 ->hideWhenCreating(),
             TextField::new('title'),
             TextField::new('category'),

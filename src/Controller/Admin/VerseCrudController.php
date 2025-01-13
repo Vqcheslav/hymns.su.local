@@ -13,7 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
 class VerseCrudController extends AbstractCrudController
@@ -39,13 +39,15 @@ class VerseCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('verseId')
-                ->setLabel('Verse Id')
+            IdField::new('verseId', 'Verse Id')
                 ->hideOnForm()
                 ->setSortable(true),
-            AssociationField::new('hymn')
-                ->setLabel('Hymn Id'),
-            NumberField::new('position'),
+            AssociationField::new('hymn', 'Hymn Id')
+                ->setQueryBuilder(function ($queryBuilder) {
+                    return $queryBuilder->orderBy('entity.updatedAt', 'DESC');
+                }),
+            IntegerField::new('position')
+                ->setHtmlAttribute('value', 1),
             BooleanField::new('isChorus'),
             TextareaField::new('lyrics'),
             TextareaField::new('chords')
