@@ -77,6 +77,15 @@ class HymnService extends Service
         return $this->makeResultDto(true, $hymn, 'Successfully retrieved hymn');
     }
 
+    public function getSearchExpression(string $search): string
+    {
+        $search = trim(str_replace([',', '.', ':', ';', '  '], [' ', ' ', ' ', ' ', ' '], $search));
+        $exploded = explode(' ', $search);
+        $exploded = array_filter($exploded);
+
+        return sprintf('%%%s%%', implode('%', $exploded));
+    }
+
     public function searchHymns(string $search): ResultDto
     {
         $search = trim(str_replace([',', '.', ':', ';', '  '], [' ', ' ', ' ', ' ', ' '], $search));
@@ -85,9 +94,7 @@ class HymnService extends Service
             $hymns = $this->hymnRepository->searchHymnsByNumber($search, self::SEARCH_RESULTS_LIMIT);
             $hymns = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymns);
         } else {
-            $exploded = explode(' ', $search);
-            $exploded = array_filter($exploded);
-            $searchExpression = sprintf('%%%s%%', implode('%', $exploded));
+            $searchExpression = $this->getSearchExpression($search);
             $limit = round(self::SEARCH_RESULTS_LIMIT / 2);
 
             $hymnsByTitle = $this->hymnRepository->searchHymnsByTitle($searchExpression, $limit);

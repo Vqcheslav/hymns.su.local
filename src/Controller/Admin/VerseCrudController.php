@@ -46,8 +46,7 @@ class VerseCrudController extends AbstractCrudController
                 ->setQueryBuilder(function ($queryBuilder) {
                     return $queryBuilder->orderBy('entity.updatedAt', 'DESC');
                 }),
-            IntegerField::new('position')
-                ->setHtmlAttribute('value', 1),
+            IntegerField::new('position'),
             BooleanField::new('isChorus'),
             TextareaField::new('lyrics'),
             TextareaField::new('chords')
