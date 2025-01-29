@@ -1,0 +1,436 @@
+{% extends 'app.html.twig' %}
+
+{% block description %}
+    Песнь Возрождения ЕХвДа, Песнь Возрождения 3400, Сборник песен Демянск и Пользовательский сборник.
+    Поиск осуществляется по всем сборникам
+{% endblock %}
+
+{% block icon %}
+    <link rel="icon" href="{{ absolute_url(asset('img/hymns/favicon.png')) }}" type="image/png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Сборники Гимнов">
+    <meta property="og:url" content="{{ url('homepage') }}">
+    <meta property="og:locale" content="ru">
+    <meta property="og:title" content="Сборники Гимнов">
+    <meta property="og:description"
+          content="Песнь Возрождения ЕХвДа, Песнь Возрождения 3400, Сборник песен Демянск и Пользовательский сборник. Поиск осуществляется по всем сборникам">
+    <meta property="og:image" content="{{ absolute_url(asset('img/hymns/favicon.png')) }}">
+    <meta property="og:image:secure_url" content="{{ absolute_url(asset('img/hymns/favicon.png')) }}">
+    <meta property="og:image:width" content="400">
+    <meta property="og:image:height" content="400">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Сборники Гимнов">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{ absolute_url(asset('img/hymns/favicon.png')) }}">
+{% endblock %}
+
+{% block title %}Гимны{% endblock %}
+
+{% block styles %}
+    <link href="{{ asset('css/hymns/hymns.css?version=1.3') }}" rel="stylesheet">
+    <script src="{{ asset('js/vendor/nosleep.js') }}"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+{% endblock %}
+
+{% block main %}
+    <div id="app">
+        <div class="container mt-5 mb-3">
+            <form @submit.prevent="searchHymns" class="pt-5">
+                <h1 class="h1">Сборники гимнов</h1>
+                <div class="form-check form-switch">
+                    <input
+                        v-model="noSleepCheck"
+                        id="noSleepCheckbox"
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                    >
+                    <label class="form-check-label" for="noSleepCheckbox">Не выключать экран</label>
+                </div>
+                <label class="mt-5 form-label" for="searchHymnsInput">Поиск по всем сборникам</label>
+                <div class="input-group border border-secondary rounded-3">
+                    <input
+                        v-model="searchString"
+                        id="searchHymnsInput"
+                        class="form-control border-0"
+                        type="text"
+                        aria-label="Search"
+                        aria-describedby="searchHymnsLabel"
+                        placeholder="🔎 Номер или текст"
+                        autocomplete="off"
+                        spellcheck="true"
+                        required
+                    >
+                    <button
+                        @click="resetSearchForm"
+                        class="btn-close btn"
+                        style="height: auto; padding: 0 10px;"
+                        type="reset"
+                        aria-label="Reset form"
+                    ></button>
+                    <button class="btn btn-primary">Найти</button>
+                </div>
+                <div class="btn-group mt-1 rounded-3" role="group" aria-label="Group For Input">
+                    <button @click="typeToSearchInput('ї')" type="button" class="btn btn-outline-secondary">ї</button>
+                    <button @click="typeToSearchInput('є')" type="button" class="btn btn-outline-secondary">є</button>
+                    <button @click="typeToSearchInput('і')" type="button" class="btn btn-outline-secondary">і</button>
+                    <button @click="typeToSearchInput('\'')" type="button" class="btn btn-outline-secondary">'</button>
+                </div>
+            </form>
+            <div v-if="showSearchResults" id="searchDiv" class="py-2">
+                <p>
+                    ${ searchResultsLabel }$
+                </p>
+                <div v-if="searchResults.length !== 0" id="searchResults" class="d-grid gap-2">
+                    <div v-for="hymn in searchResults" @click="openHymn(hymn)"
+                         class="m-0 p-0 cursor-pointer border-bottom">
+                        <p class="m-0 small">${ hymn.book_title }$</p>
+                        <p class="m-0 mb-1 fw-bold text-overflow-ellipsis">
+                            <span v-html="hymn.number"></span>: ${ hymn.title }$…
+                        </p>
+                        <p
+                            class="m-0 pb-1"
+                            v-html="getVerseLyricsText(hymn.verses[0])"
+                        ></p>
+                    </div>
+                </div>
+            </div>
+            <div id="booksCollection" class="mt-5 py-2 d-flex flex-wrap gap-2">
+                <nav aria-label="Book Collection">
+                    <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        ${ selectedBook.title }$
+                    </button>
+                    <ul class="dropdown-menu overflow-auto bg-body-tertiary">
+                        <li v-for="book in books" class="cursor-pointer">
+                            <a @click="selectBook(book)" class="dropdown-item">${ book.title }$</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <nav class="user-select-none" aria-label="Page navigation">
+                <ul class="pagination">
+                    <li :class="{ 'page-item': true, 'disabled': currentPage === 1 }">
+                        <a @click.prevent="currentPage = currentPage - 1" class="page-link" href="#" aria-label="Prev">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li v-if="currentPage - 1 > 0" class="page-item">
+                        <a @click.prevent="currentPage = currentPage - 1" class="page-link" href="#">
+                            ${ currentPage - 1 }$
+                        </a>
+                    </li>
+                    <li class="page-item active">
+                        <a @click.prevent class="page-link" href="#">
+                            ${ currentPage }$
+                        </a>
+                    </li>
+                    <li v-if="currentPage + 1 < maxPage" class="page-item">
+                        <a @click.prevent="currentPage = currentPage + 1" class="page-link" href="#">
+                            ${ currentPage + 1 }$
+                        </a>
+                    </li>
+                    <li v-if="currentPage + 2 < maxPage && currentPage === 1" class="page-item">
+                        <a @click.prevent="currentPage = currentPage + 2" class="page-link" href="#">
+                            ${ currentPage + 2 }$
+                        </a>
+                    </li>
+                    <li v-if="currentPage + 2 < maxPage" class="page-item">
+                        <a @click.prevent class="page-link" href="#">
+                            ...
+                        </a>
+                    </li>
+                    <li v-if="currentPage !== maxPage" class="page-item">
+                        <a @click.prevent="currentPage = maxPage" class="page-link" href="#">
+                            ${ maxPage }$
+                        </a>
+                    </li>
+                    <li :class="{ 'page-item': true, 'disabled': currentPage === maxPage }">
+                        <a @click.prevent="currentPage = currentPage + 1" class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div id="hymnsCollection" class="my-5 d-grid gap-2">
+                <div v-if="hymns.length === 0" class="fs-5 mh-100" style="height: 100vh;">
+                    ${ hymnCollectionLabel }$
+                </div>
+
+                <div v-for="hymn in hymns">
+                    <p @click="openHymn(hymn)" class="m-0 fs-5 cursor-pointer">
+                        <span class="fw-bold">${ hymn.number }$</span>
+                        <span class="ms-3">${ hymn.title + '…' }$</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalWindow" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-lg-down">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div>
+                            <h1 id="modalWindowTitle" class="modal-title fs-5 fw-bold text-overflow-ellipsis">
+                                ${ openedHymn.number + ': ' + openedHymn.title + '…' }$
+                            </h1>
+                            <div class="d-flex align-items-center flex-wrap">
+                                <div id="modalWindowSubtitle2" class="m-0 small pe-1">${ openedHymn.book_title }$</div>
+                                <div id="modalWindowSubtitle" class="m-0 small">${ ':: ' + openedHymn.category }$</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body new-scrollbar">
+                        <div class="mb-4 d-flex align-items-center justify-content-between">
+                            <a
+                                id="modalLinkForSendNotification"
+                                class="link-secondary link-opacity-75"
+                                :href="openedHymn.submitErrorLink"
+                            >Сообщить об ошибке</a>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Font button group">
+                                <button
+                                    @click="changeOpenedHymnLyricsFontSize(-2)"
+                                    class="btn btn-outline-secondary"
+                                    title="Уменьшить шрифт"
+                                >-Aa
+                                </button>
+                                <button
+                                    @click="copyHymnText(openedHymn)"
+                                    class="btn btn-outline-secondary"
+                                    title="Скопировать текст"
+                                >
+                                    <svg class="bi">
+                                        <use href="#clipboard"></use>
+                                    </svg>
+                                </button>
+                                <button
+                                    @click="changeOpenedHymnLyricsFontSize(2)"
+                                    class="btn btn-outline-secondary"
+                                    title="Увеличить шрифт"
+                                >+Aa
+                                </button>
+                            </div>
+                        </div>
+                        <div :style="{ 'font-size': openedHymnLyricsFontSize + 'px' }">
+                            <p
+                                v-for="verse in openedHymn.verses"
+                                v-html="getVerseLyricsHtml(verse)"
+                                class="mb-4"
+                            ></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="module">
+        const { createApp, ref, watch } = Vue
+
+        createApp({
+            delimiters: ['${', '}$'],
+            setup () {
+                const KEY_OF_MODAL_BODY_FONT_SIZE = 'modal_window_body_font_size'
+                const songsPerPage = 100
+                const noSleep = new NoSleep()
+
+                const currentPage = ref(1)
+                const maxPage = ref(1)
+                const noSleepCheck = ref(false)
+                const searchString = ref('')
+                const showSearchResults = ref(false)
+                const searchResults = ref([])
+                const searchResultsLabel = ref('')
+                const selectedBook = ref({})
+                const hymns = ref([])
+                const hymnCollectionLabel = ref('Загрузка…')
+                const books = ref([])
+                const openedHymn = ref({
+                    book_title: 'Загрузка…',
+                    number: 'Загрузка',
+                    title: 'подождите',
+                    category: '',
+                    verses: [],
+                })
+                const openedHymnLyricsFontSize = ref(Number(localStorage.getItem(KEY_OF_MODAL_BODY_FONT_SIZE) || 18))
+
+                watch(noSleepCheck, (on) => {
+                    on ? noSleep.enable() : noSleep.disable()
+                })
+
+                watch(currentPage, () => {
+                    updateHymns()
+                })
+
+                async function getData (uri) {
+                    let response = await fetch(uri)
+                    let responseJson = await response.json()
+
+                    if ( ! responseJson?.ok) {
+                        Toast.showMessageFromResponse(response, responseJson)
+                    }
+
+                    return responseJson
+                }
+
+                async function updateBooks () {
+                    let responseJson = await getData('/api/v1/books')
+
+                    for (let bookId in responseJson.data) {
+                        books.value.push(responseJson.data[bookId])
+                    }
+                }
+
+                async function updateHymns () {
+                    hymnCollectionLabel.value = 'Загрузка…'
+                    let startNumber = currentPage.value * songsPerPage - songsPerPage
+                    let endNumber = currentPage.value * songsPerPage
+
+                    let responseJson = await getData(
+                        '/api/v1/hymns/book/' + selectedBook.value.book_id + '/' + startNumber + '/' + endNumber,
+                    )
+                    hymns.value = responseJson.data
+
+                    if (hymns.value.length === 0) {
+                        hymnCollectionLabel.value = 'Ничего нет, к сожалению'
+                    }
+                }
+
+                function selectBook (book) {
+                    selectedBook.value = book
+                    currentPage.value = 1
+                    maxPage.value = Math.ceil(Number((book.total_songs / songsPerPage).toFixed(2)))
+                    updateHymns()
+                }
+
+                function typeToSearchInput (value) {
+                    searchString.value += value
+                }
+
+                function resetSearchForm () {
+                    searchString.value = ''
+                    showSearchResults.value = false
+                    searchResults.value = []
+                }
+
+                function mark (string, word) {
+                    return String(string).replace(new RegExp(word, 'gim'), '<mark>$&</mark>')
+                }
+
+                async function searchHymns () {
+                    showSearchResults.value = true
+                    searchResultsLabel.value = 'Загрузка…'
+                    let responseJson = await getData('/api/v1/hymns/search/' + searchString.value)
+                    let hymns = []
+
+                    for (let hymn of responseJson.data) {
+                        for (let word of searchString.value.trim().split(' ')) {
+                            hymn.number = mark(hymn.number, word)
+                            hymn.verses[0].lyrics = mark(hymn.verses[0].lyrics, word)
+                        }
+
+                        hymns.push(hymn)
+                    }
+
+                    searchResults.value = hymns
+                    searchResultsLabel.value = searchResults.value.length === 0
+                        ? 'Нет результатов'
+                        : 'Результаты поиска: '
+                }
+
+                async function openHymn (hymn) {
+                    let modalWindow = new bootstrap.Modal('#modalWindow')
+                    modalWindow.show()
+                    noSleepCheck.value = true
+
+                    let responseJson = await getData('/api/v1/hymns/' + hymn.hymn_id)
+                    hymn = responseJson.data
+                    hymn.submitErrorLink = 'mailto:vqcheslav.official@gmail.com'
+                        + '?subject=Ошибка%20в%20тексте%20гимна&body=Номер%20гимна%3A%20'
+                        + getHymnNumberAndTitle(hymn)
+                        + '%0AСборник%3A%20'
+                        + hymn.book_title
+                        + '%0AКуплет%3A%20%0AОписание%3A%20%0A'
+
+                    openedHymn.value = hymn
+                }
+
+                function getVerseLyricsHtml (verse) {
+                    let lyrics = verse.is_chorus ? '<i>Припев:</i> <br>' : verse.position + '. '
+
+                    return lyrics + verse.lyrics.replaceAll('\n', '<br>')
+                }
+
+                function getVerseLyricsText (verse) {
+                    let lyrics = verse.is_chorus ? 'Припев: \n' : verse.position + '. '
+
+                    return lyrics + verse.lyrics
+                }
+
+                function changeOpenedHymnLyricsFontSize (change) {
+                    if (
+                        (change > 0 && openedHymnLyricsFontSize.value >= 36)
+                        || (change < 0 && openedHymnLyricsFontSize.value <= 12)
+                    ) {
+                        return
+                    }
+
+                    openedHymnLyricsFontSize.value += change
+                    localStorage.setItem(KEY_OF_MODAL_BODY_FONT_SIZE, openedHymnLyricsFontSize.value)
+                }
+
+                function getHymnNumberAndTitle (hymn) {
+                    return hymn.number + ': ' + hymn.title + '…'
+                }
+
+                function copyHymnText (hymn) {
+                    let text = getHymnNumberAndTitle(hymn) + '\n'
+                    text += hymn.book_title + ' :: ' + hymn.category
+                    text += '\n\n\n'
+
+                    for (let verse of hymn.verses) {
+                        text += getVerseLyricsText(verse) + '\n\n'
+                    }
+
+                    copyText(text.trim())
+                    Toast.showToastMessageWithTimeout('Успешно', 'Текст скопирован')
+                }
+
+                updateBooks()
+
+                selectBook({
+                    book_id: 'song-of-rebirth-ehvda',
+                    title: 'Песнь Возрождения ЕХвДА',
+                    total_songs: 3415,
+                })
+
+                return {
+                    currentPage,
+                    maxPage,
+                    noSleepCheck,
+                    searchString,
+                    resetSearchForm,
+                    showSearchResults,
+                    searchResults,
+                    searchResultsLabel,
+                    selectedBook,
+                    selectBook,
+                    hymns,
+                    hymnCollectionLabel,
+                    books,
+                    typeToSearchInput,
+                    searchHymns,
+                    openedHymn,
+                    openHymn,
+                    getVerseLyricsHtml,
+                    getVerseLyricsText,
+                    openedHymnLyricsFontSize,
+                    changeOpenedHymnLyricsFontSize,
+                    copyHymnText,
+                }
+            },
+        }).mount('#app')
+    </script>
+{% endblock %}
