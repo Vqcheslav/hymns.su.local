@@ -258,7 +258,7 @@
                     category: '',
                     verses: [],
                 })
-                const openedHymnLyricsFontSize = ref(Number(localStorage.getItem(KEY_OF_MODAL_BODY_FONT_SIZE) || 18))
+                const openedHymnLyricsFontSize = ref(Number(localStorage.getItem(KEY_OF_MODAL_BODY_FONT_SIZE)) || 18)
 
                 function debounce(func, ms) {
                     let timeout;
