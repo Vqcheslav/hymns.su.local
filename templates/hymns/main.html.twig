@@ -29,7 +29,12 @@
 {% block styles %}
     <link href="{{ asset('css/hymns/hymns.css?version=1.3') }}" rel="stylesheet">
     <script src="{{ asset('js/vendor/nosleep.js') }}"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    {% if app.environment is same as('prod') %}
+        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    {% else %}
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    {% endif %}
 {% endblock %}
 
 {% block main %}
@@ -172,7 +177,7 @@
                     <div class="modal-header">
                         <div>
                             <h1 id="modalWindowTitle" class="modal-title fs-5 fw-bold text-overflow-ellipsis">
-                                ${ openedHymn.number + ': ' + openedHymn.title + '…' }$
+                                ${ getHymnNumberAndTitle(openedHymn) }$
                             </h1>
                             <div class="d-flex align-items-center flex-wrap">
                                 <div id="modalWindowSubtitle2" class="m-0 small pe-1">${ openedHymn.book_title }$</div>
@@ -260,12 +265,12 @@
                 })
                 const openedHymnLyricsFontSize = ref(Number(localStorage.getItem(KEY_OF_MODAL_BODY_FONT_SIZE)) || 18)
 
-                function debounce(func, ms) {
-                    let timeout;
-                    return function() {
-                        clearTimeout(timeout);
-                        timeout = setTimeout(() => func.apply(this, arguments), ms);
-                    };
+                function debounce (func, ms) {
+                    let timeout
+                    return function () {
+                        clearTimeout(timeout)
+                        timeout = setTimeout(() => func.apply(this, arguments), ms)
+                    }
                 }
 
                 watch(noSleepCheck, (on) => {
@@ -418,9 +423,8 @@
                 }
 
                 function copyHymnText (hymn) {
-                    let text = getHymnNumberAndTitle(hymn) + '\n'
-                    text += hymn.book_title + ' :: ' + hymn.category
-                    text += '\n\n\n'
+                    let text = hymn.book_title + ' :: ' + hymn.category + '\n'
+                    text += getHymnNumberAndTitle(hymn) + '\n\n\n'
 
                     for (let verse of hymn.verses) {
                         text += getVerseLyricsText(verse) + '\n\n'
@@ -455,6 +459,7 @@
                     typeToSearchInput,
                     searchHymns,
                     openedHymn,
+                    getHymnNumberAndTitle,
                     openHymn,
                     getVerseLyricsHtml,
                     getVerseLyricsText,
