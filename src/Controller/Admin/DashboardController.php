@@ -19,7 +19,7 @@ class DashboardController extends AbstractDashboardController
     {
         $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
 
-        return $this->redirect($adminUrlGenerator->setController(BookCrudController::class)->generateUrl());
+        return $this->redirect($adminUrlGenerator->setController(HymnCrudController::class)->generateUrl());
     }
 
     public function configureDashboard(): Dashboard
@@ -34,7 +34,7 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToRoute('Back to the website', 'fa fa-home', 'hymns');
+        yield MenuItem::linkToRoute('Back to the website', 'fa fa-home', 'homepage');
         yield MenuItem::linkToCrud('Books', 'fas fa-book', Book::class);
         yield MenuItem::linkToCrud('Hymns', 'fas fa-music', Hymn::class);
         yield MenuItem::linkToCrud('Verses', 'fas fa-list', Verse::class);
