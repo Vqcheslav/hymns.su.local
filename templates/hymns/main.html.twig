@@ -50,6 +50,7 @@
                 <label class="mt-5 form-label" for="searchHymnsInput">Поиск по всем сборникам</label>
                 <div class="input-group border border-secondary rounded-3">
                     <input
+                        ref="searchInput"
                         v-model="searchString"
                         id="searchHymnsInput"
                         class="form-control border-0"
@@ -227,19 +228,22 @@
 
 {% block scripts %}
     <script type="module">
-        const { createApp, ref, watch } = Vue
+        const { createApp, ref, watch, useTemplateRef } = Vue
 
         createApp({
             delimiters: ['${', '}$'],
             setup () {
                 const KEY_OF_MODAL_BODY_FONT_SIZE = 'modal_window_body_font_size'
-                const songsPerPage = 100
+                const SONGS_PER_PAGE = 100
+                const DEBOUNCE_TIME = 1000
                 const noSleep = new NoSleep()
 
                 const currentPage = ref(1)
                 const maxPage = ref(1)
                 const noSleepCheck = ref(false)
                 const searchString = ref('')
+                const searchInput = useTemplateRef('searchInput')
+                const lastSearch = ref('')
                 const showSearchResults = ref(false)
                 const searchResults = ref([])
                 const searchResultsLabel = ref('')
@@ -256,13 +260,23 @@
                 })
                 const openedHymnLyricsFontSize = ref(Number(localStorage.getItem(KEY_OF_MODAL_BODY_FONT_SIZE) || 18))
 
+                function debounce(func, ms) {
+                    let timeout;
+                    return function() {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(() => func.apply(this, arguments), ms);
+                    };
+                }
+
                 watch(noSleepCheck, (on) => {
                     on ? noSleep.enable() : noSleep.disable()
                 })
 
-                watch(currentPage, () => {
-                    updateHymns()
-                })
+                let debouncedSearch = debounce(searchHymns, DEBOUNCE_TIME)
+
+                watch(searchString, debouncedSearch)
+
+                watch(currentPage, updateHymns)
 
                 async function getData (uri) {
                     let response = await fetch(uri)
@@ -285,8 +299,8 @@
 
                 async function updateHymns () {
                     hymnCollectionLabel.value = 'Загрузка…'
-                    let startNumber = currentPage.value * songsPerPage - songsPerPage
-                    let endNumber = currentPage.value * songsPerPage
+                    let startNumber = currentPage.value * SONGS_PER_PAGE - SONGS_PER_PAGE
+                    let endNumber = currentPage.value * SONGS_PER_PAGE
 
                     let responseJson = await getData(
                         '/api/v1/hymns/book/' + selectedBook.value.book_id + '/' + startNumber + '/' + endNumber,
@@ -301,15 +315,20 @@
                 function selectBook (book) {
                     selectedBook.value = book
                     currentPage.value = 1
-                    maxPage.value = Math.ceil(Number((book.total_songs / songsPerPage).toFixed(2)))
+                    maxPage.value = Math.ceil(Number((book.total_songs / SONGS_PER_PAGE).toFixed(2)))
                     updateHymns()
                 }
 
                 function typeToSearchInput (value) {
-                    searchString.value += value
+                    let searchStart = searchString.value.substring(0, searchInput.value.selectionStart)
+                    let searchEnd = searchString.value.substring(searchInput.value.selectionEnd)
+                    searchString.value = searchStart + value + searchEnd
+
+                    searchInput.value.focus()
                 }
 
                 function resetSearchForm () {
+                    lastSearch.value = ''
                     searchString.value = ''
                     showSearchResults.value = false
                     searchResults.value = []
@@ -320,13 +339,25 @@
                 }
 
                 async function searchHymns () {
+                    let search = searchString.value.trim()
+
+                    if (search === '') {
+                        resetSearchForm()
+
+                        return
+                    }
+
+                    if (search === lastSearch.value) {
+                        return
+                    }
+
                     showSearchResults.value = true
                     searchResultsLabel.value = 'Загрузка…'
-                    let responseJson = await getData('/api/v1/hymns/search/' + searchString.value)
+                    let responseJson = await getData('/api/v1/hymns/search/' + search)
                     let hymns = []
 
                     for (let hymn of responseJson.data) {
-                        for (let word of searchString.value.trim().split(' ')) {
+                        for (let word of search.split(' ')) {
                             hymn.number = mark(hymn.number, word)
                             hymn.verses[0].lyrics = mark(hymn.verses[0].lyrics, word)
                         }
@@ -334,6 +365,7 @@
                         hymns.push(hymn)
                     }
 
+                    lastSearch.value = search
                     searchResults.value = hymns
                     searchResultsLabel.value = searchResults.value.length === 0
                         ? 'Нет результатов'
