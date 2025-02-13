@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Hymn;
 use App\Service\BookService;
 use App\Service\HymnService;
 use App\Service\VerseService;
@@ -40,6 +41,33 @@ class TestController extends Controller
         $this->entityManager = $entityManager;
     }
 
+    #[Route("/test/fix/ukrainian/{startNumber}", name: "test.fix_ukrainian_songs", methods: ["GET"])]
+    public function fixUkrainianVerses(int $startNumber = 2400): Response
+    {
+        $endNumber = $startNumber + 100;
+        $hymns = $this->entityManager->getRepository(Hymn::class)
+            ->getHymnsWithVerses(self::BOOK_ID_EHVDA, $startNumber, $endNumber);
+        $fixedHymnIds = [];
+
+        foreach ($hymns as $hymn) {
+            foreach ($hymn->getVerses() as $verse) {
+                if (str_contains($verse->getLyrics(), 'i') || str_contains($verse->getLyrics(), 'I')) {
+                    $fixedHymnIds[] = $hymn->getHymnId();
+                    $verse->setLyrics(str_replace('i', 'і', $verse->getLyrics()));
+                    $verse->setLyrics(str_replace('I', 'І', $verse->getLyrics()));
+                }
+
+                $this->entityManager->persist($verse);
+            }
+
+            $this->entityManager->flush();
+        }
+
+        $fixedHymnIds = array_values(array_unique($fixedHymnIds));
+
+        return $this->jsonResponse(true, $fixedHymnIds, 'End Number: ' . $endNumber);
+    }
+
     #[Route("/test/get-json/{bookId}/{filename}/{startHymnNumber}", name: "test.getJson", methods: ["GET"])]
     public function getJson(string $bookId, string $filename, int $startHymnNumber = null): Response
     {
@@ -56,7 +84,7 @@ class TestController extends Controller
             $this->bookService->jsonEncode($hymns, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)->getData()
         );
 
-        return $this->jsonResponse(true, $hymns, sprintf('Songs of %s retrieved', $bookId), Response::HTTP_OK);
+        return $this->jsonResponse(true, $hymns, sprintf('Songs of %s retrieved', $bookId));
     }
 
     #[Route("/test/fill-table-by-raw-data/{bookId}/{filename}", name: "test.fillTableByRawData", methods: ["GET"])]
