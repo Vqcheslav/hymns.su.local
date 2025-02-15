@@ -138,4 +138,16 @@ class HymnRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getUpdatedHymns(string $afterDateTime, int $limit = 500)
+    {
+        return $this->createQueryBuilder('h')
+            ->select('h.hymnId, h.updatedAt')
+            ->andWhere('h.updatedAt >= :afterDateTime')
+            ->orderBy('h.updatedAt', 'DESC')
+            ->setParameter('afterDateTime', $afterDateTime)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

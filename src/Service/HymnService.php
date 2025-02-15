@@ -48,19 +48,27 @@ class HymnService extends Service
 
     public function getHymnsByBookId(string $bookId, int $startNumber, int $endNumber): ResultDto
     {
-        $bookId = $this->bookService->getCorrectBookId($bookId, $endNumber);
-        $hymns = $this->hymnRepository->getHymnsByBookId($bookId, $startNumber, $endNumber);
-        $hymns = $this->hymnNormalizer->normalizeArray($hymns);
+        try {
+            $bookId = $this->bookService->getCorrectBookId($bookId, $endNumber);
+            $hymns = $this->hymnRepository->getHymnsByBookId($bookId, $startNumber, $endNumber);
+            $hymns = $this->hymnNormalizer->normalizeArray($hymns);
+        } catch (Throwable) {
+            return $this->makeResultDto(false, [], 'Cannot retrieve hymns by book id: ' . $bookId);
+        }
 
         return $this->makeResultDto(true, $hymns, 'Successfully retrieved hymns');
     }
 
     public function getHymnsWithVerses(string $bookId, int $startNumber, int $endNumber): ResultDto
     {
-        $bookId = $this->bookService->getCorrectBookId($bookId, $endNumber);
-        $hymns = $this->hymnRepository
-            ->getHymnsWithVerses($bookId, $startNumber, $endNumber, self::HYMNS_WITH_VERSES_LIMIT);
-        $hymns = $this->hymnNormalizer->normalizeArrayWithVerses($hymns);
+        try {
+            $bookId = $this->bookService->getCorrectBookId($bookId, $endNumber);
+            $hymns = $this->hymnRepository
+                ->getHymnsWithVerses($bookId, $startNumber, $endNumber, self::HYMNS_WITH_VERSES_LIMIT);
+            $hymns = $this->hymnNormalizer->normalizeArrayWithVerses($hymns);
+        } catch (Throwable) {
+            return $this->makeResultDto(false, [], 'Cannot retrieve hymns with verses by book id: ' . $bookId);
+        }
 
         return $this->makeResultDto(true, $hymns, 'Successfully retrieved hymns');
     }
@@ -90,20 +98,24 @@ class HymnService extends Service
     {
         $search = trim(str_replace([',', '.', ':', ';', '  '], [' ', ' ', ' ', ' ', ' '], $search));
 
-        if (is_numeric($search)) {
-            $hymns = $this->hymnRepository->searchHymnsByNumber($search, self::SEARCH_RESULTS_LIMIT);
-            $hymns = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymns);
-        } else {
-            $searchExpression = $this->getSearchExpression($search);
-            $limit = round(self::SEARCH_RESULTS_LIMIT / 2);
+        try {
+            if (is_numeric($search)) {
+                $hymns = $this->hymnRepository->searchHymnsByNumber($search, self::SEARCH_RESULTS_LIMIT);
+                $hymns = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymns);
+            } else {
+                $searchExpression = $this->getSearchExpression($search);
+                $limit = round(self::SEARCH_RESULTS_LIMIT / 2);
 
-            $hymnsByTitle = $this->hymnRepository->searchHymnsByTitle($searchExpression, $limit);
-            $hymnsByTitle = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymnsByTitle);
+                $hymnsByTitle = $this->hymnRepository->searchHymnsByTitle($searchExpression, $limit);
+                $hymnsByTitle = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymnsByTitle);
 
-            $hymnsByLyrics = $this->verseRepository->searchVerses($searchExpression, $limit);
-            $hymnsByLyrics = $this->verseNormalizer->normalizeArrayWithHymns($hymnsByLyrics);
+                $hymnsByLyrics = $this->verseRepository->searchVerses($searchExpression, $limit);
+                $hymnsByLyrics = $this->verseNormalizer->normalizeArrayWithHymns($hymnsByLyrics);
 
-            $hymns = $this->getUniqueHymnsFromResults($hymnsByTitle, $hymnsByLyrics);
+                $hymns = $this->getUniqueHymnsFromResults($hymnsByTitle, $hymnsByLyrics);
+            }
+        } catch (Throwable) {
+            return $this->makeResultDto(false, [], 'Cannot find hymns by: ' . $search);
         }
 
         return $this->makeResultDto(true, $hymns, 'Successfully retrieved hymns');
@@ -128,9 +140,27 @@ class HymnService extends Service
 
     public function getHymnCategoriesByBookId(string $bookId): ResultDto
     {
-        $result = $this->hymnRepository->getHymnCategoriesByBookId($bookId);
+        try {
+            $result = $this->hymnRepository->getHymnCategoriesByBookId($bookId);
+        } catch (Throwable) {
+            return $this->makeResultDto(false, [], 'Not found');
+        }
 
         return $this->makeResultDto(true, $result, 'Successfully retrieved hymn categories');
+    }
+
+    public function getUpdatedHymns(string $afterDate): ResultDto
+    {
+        $timestamp = $this->getTimestamp($afterDate);
+        $afterDate = $this->dateTimeFormat($timestamp);
+
+        try {
+            $result = $this->hymnRepository->getUpdatedHymns($afterDate);
+        } catch (Throwable) {
+            return $this->makeResultDto(false, [], 'Cannot retrieve updated hymns after: ' . $afterDate);
+        }
+
+        return $this->makeResultDto(true, $result, 'Successfully retrieved updated hymns');
     }
 
     public function parseAndCreateHymn(

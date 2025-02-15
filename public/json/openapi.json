@@ -142,6 +142,46 @@
         }
       }
     },
+    "/hymns/updated/{afterDateTime}": {
+      "get": {
+        "tags": [
+          "Hymns"
+        ],
+        "summary": "Get the ids of the hymns that have been updated",
+        "description": "Returns hymn ids (max: 500) with updatedAt property",
+        "operationId": "getUpdatedHymns",
+        "parameters": [
+          {
+            "name": "afterDateTime",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2025-02-15T17:32:28Z"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error: Unprocessable Content. See UnprocessableEntity in Schemas"
+          },
+          "500": {
+            "description": "Error: Internal Server Error. See ServerError in Schemas"
+          }
+        }
+      }
+    },
     "/hymns/{hymn_id}": {
       "get": {
         "tags": [

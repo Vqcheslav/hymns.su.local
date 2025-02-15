@@ -32,7 +32,15 @@ class HymnsController extends  Controller
         return $this->jsonResponseFromDto($resultDto);
     }
 
-    #[Route("/api/v1/hymns/{hymnId}", name: "hymns.getHymnByHymnId", methods: ["GET"])]
+    #[Route("/api/v1/hymns/updated/{afterDate<[0-9-TZ: ]+>}", name: "hymns.getUpdatedHymns", methods: ["GET"])]
+    public function getUpdatedHymns(string $afterDate): Response
+    {
+        $resultDto = $this->hymnsService->getUpdatedHymns($afterDate);
+
+        return $this->jsonResponseFromDto($resultDto);
+    }
+
+    #[Route("/api/v1/hymns/{hymnId<[a-z0-9-]+>}", name: "hymns.getHymnByHymnId", methods: ["GET"])]
     public function getHymnByHymnId(string $hymnId): Response
     {
         $resultDto = $this->hymnsService->getHymnByHymnId($hymnId);
