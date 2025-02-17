@@ -50,7 +50,7 @@
                         type="checkbox"
                         role="switch"
                     >
-                    <label class="form-check-label" for="noSleepCheckbox">Не выключать экран</label>
+                    <label class="form-check-label" for="noSleepCheckbox">Выключать экран</label>
                 </div>
                 <label class="mt-5 form-label" for="searchHymnsInput">Поиск по всем сборникам</label>
                 <div class="input-group border border-secondary rounded-3">
@@ -107,9 +107,12 @@
                             aria-expanded="false">
                         ${ selectedBook.title }$
                     </button>
-                    <ul class="dropdown-menu overflow-auto bg-body-tertiary">
+                    <ul class="dropdown-menu overflow-auto shadow">
                         <li v-for="book in books" class="cursor-pointer">
-                            <a @click="selectBook(book)" class="dropdown-item">${ book.title }$</a>
+                            <a
+                                @click="selectBook(book)"
+                                :class="{'dropdown-item': true, 'active': book.book_id === selectedBook.book_id }"
+                            >${ book.title }$</a>
                         </li>
                     </ul>
                 </nav>
@@ -245,7 +248,7 @@
 
                 const currentPage = ref(1)
                 const maxPage = ref(1)
-                const noSleepCheck = ref(false)
+                const noSleepCheck = ref(null)
                 const searchString = ref('')
                 const searchInput = useTemplateRef('searchInput')
                 const lastSearch = ref('')
@@ -275,8 +278,14 @@
 
                 let debouncedSearch = debounce(searchHymns, DEBOUNCE_TIME)
 
-                watch(noSleepCheck, (on) => {
-                    on ? noSleep.enable() : noSleep.disable()
+                watch(noSleepCheck, (off) => {
+                    if (off) {
+                        noSleep.disable()
+                        console.log('noSleep disabled')
+                    } else {
+                        noSleep.enable()
+                        console.log('noSleep enabled')
+                    }
                 })
 
                 watch(searchString, debouncedSearch)
@@ -329,6 +338,10 @@
                 }
 
                 function selectBook (book) {
+                    if (selectedBook.value.book_id === book.book_id) {
+                        return
+                    }
+
                     selectedBook.value = book
                     currentPage.value = 1
                     maxPage.value = Math.ceil(Number((book.total_songs / SONGS_PER_PAGE).toFixed(2)))
@@ -391,7 +404,10 @@
                 async function openHymn (hymn) {
                     let modalWindow = new bootstrap.Modal('#modalWindow')
                     modalWindow.show()
-                    noSleepCheck.value = true
+
+                    if (noSleepCheck.value !== true) {
+                        noSleepCheck.value = false
+                    }
 
                     let responseJson = await getData('/api/v1/hymns/' + hymn.hymn_id)
                     hymn = responseJson.data
