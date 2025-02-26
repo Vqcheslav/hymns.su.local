@@ -224,7 +224,7 @@
                             <p
                                 v-for="verse in openedHymn.verses"
                                 v-html="getVerseLyricsHtml(verse)"
-                                class="mb-4"
+                                :class="{'mb-4': true, 'p-2 border border-secondary': verse.is_chorus}"
                             ></p>
                         </div>
                     </div>
