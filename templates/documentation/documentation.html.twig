@@ -5,7 +5,7 @@
 {% block title %}Гимны: Документация{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.18.2/swagger-ui.css" />
+    <link rel="stylesheet" href="{{ asset('css/vendor/swagger-ui.css') }}" />
     <style>
         .parameters input {
           color: black;
@@ -23,7 +23,7 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="https://unpkg.com/swagger-ui-dist@5.18.2/swagger-ui-bundle.js" crossorigin></script>
+    <script src="{{ asset('js/vendor/swagger-ui-bundle.js') }}" crossorigin></script>
     <script>
         window.onload = () => {
             window.ui = SwaggerUIBundle({
