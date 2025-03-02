@@ -174,7 +174,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="modalWindow" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal fade" id="modalWindow" tabindex="-1" aria-labelledby="modalWindowTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-lg-down">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -224,7 +224,7 @@
                             <p
                                 v-for="verse in openedHymn.verses"
                                 v-html="getVerseLyricsHtml(verse)"
-                                :class="{'mb-4': true, 'p-2 border border-secondary': verse.is_chorus}"
+                                :class="{'mb-4': true, 'p-2 rounded border border-secondary': verse.is_chorus}"
                             ></p>
                         </div>
                     </div>
