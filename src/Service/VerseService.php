@@ -90,7 +90,7 @@ class VerseService extends Service
         $verse = new Verse();
         $verse->setHymn($hymn)
             ->setPosition($position)
-            ->setChorus($isChorus)
+            ->setIsChorus($isChorus)
             ->setLyrics(trim($lyrics))
             ->setChords(trim($chords));
         $this->verseRepository->add($verse, $flush);

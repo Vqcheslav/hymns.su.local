@@ -41,6 +41,7 @@ class Hymn
     public function __construct()
     {
         $this->verses = new ArrayCollection();
+        $this->setUpdatedAt(new \DateTimeImmutable());
     }
 
     public function getHymnId(): ?string

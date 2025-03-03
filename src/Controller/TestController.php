@@ -87,7 +87,7 @@ class TestController extends Controller
         return $this->jsonResponse(true, $hymns, sprintf('Songs of %s retrieved', $bookId));
     }
 
-    #[Route("/test/fill-table-by-raw-data/{bookId}/{filename}", name: "test.fillTableByRawData", methods: ["GET"])]
+    #[Route("/test/fill-table-by-json/{bookId}/{filename}", name: "test.fillTableByRawData", methods: ["GET"])]
     public function fillTableByRawDataJson(string $bookId, string $filename): Response
     {
         $book = $this->bookService->getBookByBookId($bookId);
