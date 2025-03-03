@@ -6,6 +6,7 @@ use App\Dto\ResultDto;
 use App\Entity\Book;
 use App\Normalizer\BookNormalizer;
 use App\Repository\BookRepository;
+use Throwable;
 
 class BookService extends Service
 {
@@ -26,8 +27,12 @@ class BookService extends Service
 
     public function getBooks(): ResultDto
     {
-        $books = $this->bookRepository->findAll();
-        $books = $this->bookNormalizer->normalizeArray($books);
+        try {
+            $books = $this->bookRepository->getAllBooks();
+            $books = $this->bookNormalizer->normalizeArray($books);
+        } catch (Throwable) {
+            return $this->makeResultDto(false, [], 'Cannot retrieve books', 500);
+        }
 
         return $this->makeResultDto(true, $books, 'Successfully retrieved books');
     }

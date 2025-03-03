@@ -107,11 +107,11 @@
                             aria-expanded="false">
                         ${ selectedBook.title }$
                     </button>
-                    <ul class="dropdown-menu overflow-auto shadow">
+                    <ul class="dropdown-menu overflow-auto border-4 border-success-subtle shadow-lg">
                         <li v-for="book in books" class="cursor-pointer">
                             <a
                                 @click="selectBook(book)"
-                                :class="{'dropdown-item': true, 'active': book.book_id === selectedBook.book_id }"
+                                :class="{'dropdown-item': true, 'text-bg-success': book.book_id === selectedBook.book_id }"
                             >${ book.title }$</a>
                         </li>
                     </ul>

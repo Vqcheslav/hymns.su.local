@@ -38,4 +38,14 @@ class BookRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function getAllBooks(int $limit = 100)
+    {
+        return $this->createQueryBuilder('b')
+            ->select('b')
+            ->orderBy('b.totalSongs', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }
