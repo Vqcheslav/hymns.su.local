@@ -8,6 +8,9 @@ use Throwable;
 
 class HymnsTelegramBotService extends Service
 {
+    public const string DESCRIPTION = "1. Отправьте номер или текст, в ответ бот отдаст список результатов. 
+            \n2. Затем нажмите на выделенное кодовое слово (начинается с /) под нужным гимном для просмотра.";
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly HymnService $hymnService,
@@ -18,13 +21,17 @@ class HymnsTelegramBotService extends Service
         $messageText = $data['message']['text'];
 
         if (str_starts_with($messageText, '/')) {
-            $hymnId = str_replace('_', '-', substr($messageText, 1));
-            $hymnResultDto = $this->hymnService->getHymnByHymnId($hymnId);
-
-            if ($hymnResultDto->hasErrors()) {
-                $resultMessage = $hymnResultDto->getDetail();
+            if ($messageText === '/start' || $messageText === '/help') {
+                $resultMessage = self::DESCRIPTION;
             } else {
-                $resultMessage = $this->getTextFromHymn($hymnResultDto->getData());
+                $hymnId = str_replace('_', '-', substr($messageText, 1));
+                $hymnResultDto = $this->hymnService->getHymnByHymnId($hymnId);
+
+                if ($hymnResultDto->hasErrors()) {
+                    $resultMessage = $hymnResultDto->getDetail();
+                } else {
+                    $resultMessage = $this->getTextFromHymn($hymnResultDto->getData());
+                }
             }
         } else {
             $hymnsResultDto = $this->hymnService->searchHymns($messageText);
