@@ -67,7 +67,7 @@ class HymnsTelegramBotService extends Service
 
         foreach ($hymn['verses'] as $verse) {
             if ($verse['is_chorus']) {
-                $lyrics .= sprintf("Припев:\n%s", $verse['lyrics']);
+                $lyrics .= sprintf("<i>Припев:</i>\n%s", $verse['lyrics']);
             } else {
                 $lyrics .= sprintf('%d. %s', $verse['position'], $verse['lyrics']);
             }
@@ -80,8 +80,8 @@ class HymnsTelegramBotService extends Service
 
     public function getHeaderOfHymn(array $hymn): string
     {
-        $bookTitleAndCategory = sprintf('%s :: %s', $hymn['book_title'], $hymn['category']);
-        $numberAndTitle = sprintf('%d: %s…', $hymn['number'], $hymn['title']);
+        $bookTitleAndCategory = sprintf('<strong>%s</strong> :: %s', $hymn['book_title'], $hymn['category']);
+        $numberAndTitle = sprintf('<strong>%d</strong>: %s…', $hymn['number'], $hymn['title']);
 
         return sprintf("%s\n%s", $bookTitleAndCategory, $numberAndTitle);
     }
