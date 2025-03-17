@@ -94,6 +94,8 @@ class HymnRepository extends ServiceEntityRepository
             ->select('h', 'v')
             ->join('h.verses', 'v')
             ->andWhere('h.hymnId = :hymn_id')
+            ->orderBy('v.position', 'ASC')
+            ->addOrderBy('v.isChorus', 'DESC')
             ->setParameter('hymn_id', $hymnId)
             ->getQuery()
             ->getOneOrNullResult();
