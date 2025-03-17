@@ -8,6 +8,8 @@ use Throwable;
 
 class HymnsTelegramBotService extends Service
 {
+    public const int SEARCH_RESULTS_LIMIT = 16;
+
     public const string DESCRIPTION = "1. Отправьте номер или текст, в ответ бот отдаст список результатов. 
             \n2. Затем нажмите на выделенное кодовое слово (начинается с /) под нужным гимном для просмотра.";
 
@@ -34,7 +36,7 @@ class HymnsTelegramBotService extends Service
                 }
             }
         } else {
-            $hymnsResultDto = $this->hymnService->searchHymns($messageText);
+            $hymnsResultDto = $this->hymnService->searchHymns($messageText, self::SEARCH_RESULTS_LIMIT);
             $hymns = $hymnsResultDto->getData();
 
             if ($hymnsResultDto->hasErrors()) {

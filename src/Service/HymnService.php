@@ -94,22 +94,22 @@ class HymnService extends Service
         return sprintf('%%%s%%', implode('%', $exploded));
     }
 
-    public function searchHymns(string $search): ResultDto
+    public function searchHymns(string $search, int $limit = self::SEARCH_RESULTS_LIMIT): ResultDto
     {
         $search = trim(str_replace([',', '.', ':', ';', '  '], [' ', ' ', ' ', ' ', ' '], $search));
 
         try {
             if (is_numeric($search)) {
-                $hymns = $this->hymnRepository->searchHymnsByNumber($search, self::SEARCH_RESULTS_LIMIT);
+                $hymns = $this->hymnRepository->searchHymnsByNumber($search, $limit);
                 $hymns = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymns);
             } else {
                 $searchExpression = $this->getSearchExpression($search);
-                $limit = round(self::SEARCH_RESULTS_LIMIT / 2);
+                $halfLimit = (int) round($limit / 2);
 
-                $hymnsByTitle = $this->hymnRepository->searchHymnsByTitle($searchExpression, $limit);
+                $hymnsByTitle = $this->hymnRepository->searchHymnsByTitle($searchExpression, $halfLimit);
                 $hymnsByTitle = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymnsByTitle);
 
-                $hymnsByLyrics = $this->verseRepository->searchVerses($searchExpression, $limit);
+                $hymnsByLyrics = $this->verseRepository->searchVerses($searchExpression, $halfLimit);
                 $hymnsByLyrics = $this->verseNormalizer->normalizeArrayWithHymns($hymnsByLyrics);
 
                 $hymns = $this->getUniqueHymnsFromResults($hymnsByTitle, $hymnsByLyrics);
