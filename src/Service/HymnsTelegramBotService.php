@@ -13,6 +13,10 @@ class HymnsTelegramBotService extends Service
     public const string DESCRIPTION = "1. Отправьте номер или текст, в ответ бот отдаст список результатов. 
             \n2. Затем нажмите на выделенное кодовое слово (начинается с /) под нужным гимном для просмотра.";
 
+    public const string SUBMIT_USERNAME = '@vqcheslav';
+
+    public const string BOT_USERNAME = '@hymns_telegram_bot';
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly HymnService $hymnService,
@@ -69,21 +73,30 @@ class HymnsTelegramBotService extends Service
 
         foreach ($hymn['verses'] as $verse) {
             if ($verse['is_chorus']) {
-                $lyrics .= sprintf("<i>Припев:</i>\n%s", $verse['lyrics']);
+                $lyrics .= sprintf("<i>Припев:</i>\n%s", htmlspecialchars($verse['lyrics']));
             } else {
-                $lyrics .= sprintf('%d. %s', $verse['position'], $verse['lyrics']);
+                $lyrics .= sprintf('%d. %s', $verse['position'], htmlspecialchars($verse['lyrics']));
             }
 
             $lyrics .= "\n\n";
         }
 
-        return sprintf("%s\n\n\n%s", $this->getHeaderOfHymn($hymn), $lyrics);
+        return sprintf(
+            "%s\n\n\n%s\nБот: %s",
+            $this->getHeaderOfHymn($hymn),
+            $lyrics,
+            self::BOT_USERNAME,
+        );
     }
 
     public function getHeaderOfHymn(array $hymn): string
     {
-        $bookTitleAndCategory = sprintf('<strong>%s</strong> :: %s', $hymn['book_title'], $hymn['category']);
-        $numberAndTitle = sprintf('<strong>%d</strong>: %s…', $hymn['number'], $hymn['title']);
+        $bookTitleAndCategory = sprintf(
+            '<strong>%s</strong> :: %s',
+            htmlspecialchars($hymn['book_title']),
+            htmlspecialchars($hymn['category']),
+        );
+        $numberAndTitle = sprintf('<strong>%d</strong>: %s…', $hymn['number'], htmlspecialchars($hymn['title']));
 
         return sprintf("%s\n%s", $bookTitleAndCategory, $numberAndTitle);
     }
@@ -91,11 +104,22 @@ class HymnsTelegramBotService extends Service
     private function sendMessage(int $chatId, string $text, int $replyTo = null, string $parseMode = 'html'): ResultDto
     {
         try {
+            $usernameForLink = str_replace('@', '', self::SUBMIT_USERNAME);
             $responseQueryParams = [
                 'chat_id'             => $chatId,
                 'text'                => $text,
                 'parse_mode'          => $parseMode,
                 'reply_to_message_id' => $replyTo,
+                'reply_markup'        => $this->jsonEncode([
+                    'inline_keyboard' => [
+                        [
+                            [
+                                'text' => 'Сообщить об ошибке',
+                                'url'  => 'https://t.me/' . $usernameForLink,
+                            ],
+                        ],
+                    ],
+                ])->getData(),
             ];
 
             $this->httpClient->request(

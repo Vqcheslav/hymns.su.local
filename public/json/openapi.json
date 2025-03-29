@@ -204,7 +204,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
+                  "$ref": "#/components/schemas/HymnResponse"
                 }
               }
             }
@@ -367,6 +367,27 @@
             "items": {
               "$ref": "#/components/schemas/Hymn"
             }
+          },
+          "status": {
+            "type": "integer",
+            "example": 200
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "HymnResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Hymn"
           },
           "status": {
             "type": "integer",
