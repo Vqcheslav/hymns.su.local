@@ -82,9 +82,10 @@ class HymnsTelegramBotService extends Service
         }
 
         return sprintf(
-            "%s\n\n\n%s\nБот: %s",
+            "%s\n\n\n%s\n%s\nБот: %s",
             $this->getHeaderOfHymn($hymn),
             $lyrics,
+            $this->getSubmitErrorLink($hymn),
             self::BOT_USERNAME,
         );
     }
@@ -101,25 +102,35 @@ class HymnsTelegramBotService extends Service
         return sprintf("%s\n%s", $bookTitleAndCategory, $numberAndTitle);
     }
 
+    public function getSubmitErrorLink(array $hymn): string
+    {
+        $usernameForLink = str_replace('@', '', self::SUBMIT_USERNAME);
+        $parameters = [
+            'text' => sprintf(
+                "%s:\n%s\n%d: %s\n\n%s: ",
+                'Ошибка в тексте гимна',
+                $hymn['book_title'],
+                $hymn['number'],
+                $hymn['title'],
+                'Описание ошибки',
+            ),
+        ];
+
+        $queryParameters = http_build_query(data: $parameters, encoding_type: PHP_QUERY_RFC3986);
+        $url = sprintf('https://t.me/%s?%s', $usernameForLink, $queryParameters);
+
+        return sprintf('<a href="%s">%s</a>', $url, 'Сообщить об ошибке');
+    }
+
     private function sendMessage(int $chatId, string $text, int $replyTo = null, string $parseMode = 'html'): ResultDto
     {
         try {
-            $usernameForLink = str_replace('@', '', self::SUBMIT_USERNAME);
             $responseQueryParams = [
-                'chat_id'             => $chatId,
-                'text'                => $text,
-                'parse_mode'          => $parseMode,
-                'reply_to_message_id' => $replyTo,
-                'reply_markup'        => $this->jsonEncode([
-                    'inline_keyboard' => [
-                        [
-                            [
-                                'text' => 'Сообщить об ошибке',
-                                'url'  => 'https://t.me/' . $usernameForLink,
-                            ],
-                        ],
-                    ],
-                ])->getData(),
+                'chat_id'                  => $chatId,
+                'text'                     => $text,
+                'parse_mode'               => $parseMode,
+                'reply_to_message_id'      => $replyTo,
+                'disable_web_page_preview' => true,
             ];
 
             $this->httpClient->request(
