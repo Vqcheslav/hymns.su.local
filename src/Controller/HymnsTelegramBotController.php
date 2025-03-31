@@ -28,6 +28,10 @@ class HymnsTelegramBotController extends Controller
 
         $resultDto = $this->hymnsTelegramBotService->processMessage($data);
 
+        if ($resultDto->hasErrors()) {
+            $logger->warning($resultDto);
+        }
+
         return $this->jsonResponseFromDto($resultDto);
     }
 }

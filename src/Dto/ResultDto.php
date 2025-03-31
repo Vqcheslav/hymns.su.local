@@ -2,7 +2,9 @@
 
 namespace App\Dto;
 
-class ResultDto
+use Stringable;
+
+class ResultDto implements Stringable
 {
     private bool $ok;
 
@@ -35,19 +37,23 @@ class ResultDto
         return $this->ok;
     }
 
-    public function setOk(bool $ok): ResultDto
+    public function setOk(bool $ok = true): self
     {
         $this->ok = $ok;
 
         return $this;
     }
 
-    public function getData()
+    public function getData($key = null, $default = null)
     {
+        if ($key !== null) {
+            return $this->data[$key] ?? $default;
+        }
+
         return $this->data;
     }
 
-    public function setData($data): ResultDto
+    public function setData($data): self
     {
         $this->data = $data;
 
@@ -59,7 +65,7 @@ class ResultDto
         return $this->detail;
     }
 
-    public function setDetail(string $detail): ResultDto
+    public function setDetail(string $detail): self
     {
         $this->detail = $detail;
 
@@ -71,7 +77,7 @@ class ResultDto
         return $this->status;
     }
 
-    public function setStatus(int $status): ResultDto
+    public function setStatus(int $status): self
     {
         $this->status = $status;
 
@@ -86,5 +92,10 @@ class ResultDto
             'detail' => $this->detail,
             'status' => $this->status,
         ];
+    }
+
+    public function __toString(): string
+    {
+        return (string) json_encode($this->toArray());
     }
 }

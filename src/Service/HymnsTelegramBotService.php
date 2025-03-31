@@ -133,7 +133,12 @@ class HymnsTelegramBotService extends Service
             ];
             $url = sprintf('https://api.telegram.org/bot%s/sendMessage', $_SERVER['TELEGRAM_BOT_TOKEN']);
 
-            $this->httpClient->request('GET', $url, ['query' => $responseQueryParams]);
+            $response = $this->httpClient->request('GET', $url, ['query' => $responseQueryParams]);
+            $responseData = $response->toArray();
+
+            if (($responseData['ok'] ?? false) === false) {
+                return $this->makeResultDto(false, $responseData, $responseData['description'] ?? 'Error', 500);
+            }
         } catch (Throwable $e) {
             return $this->makeResultDto(false, [], $e->getMessage(), 500);
         }
