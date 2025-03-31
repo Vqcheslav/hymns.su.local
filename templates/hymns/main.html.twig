@@ -31,9 +31,9 @@
     <script src="{{ asset('js/vendor/nosleep.js') }}"></script>
 
     {% if app.environment is same as('prod') %}
-        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+        <script src="{{ asset('js/vendor/vue.global.prod.js') }}"></script>
     {% else %}
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="{{ asset('js/vendor/vue.global.js') }}"></script>
     {% endif %}
 {% endblock %}
 
