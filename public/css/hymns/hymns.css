@@ -1,11 +1,6 @@
-.hymns-pagination .dropdown-menu {
-    max-height: 250px;
-}
-
 .cursor-pointer {
     cursor: pointer;
 }
-
 .text-overflow-ellipsis {
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -13,7 +8,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 .pagination .page-item {
     min-width: 2.7rem;
 }
