@@ -18,33 +18,14 @@ class HymnService extends Service
 
     public const int HYMNS_WITH_VERSES_LIMIT = 1200;
 
-    private SluggerInterface $slugger;
-
-    private HymnRepository $hymnRepository;
-
-    private VerseRepository $verseRepository;
-
-    private HymnNormalizer $hymnNormalizer;
-
-    private VerseNormalizer $verseNormalizer;
-
-    private BookService $bookService;
-
     public function __construct(
-        SluggerInterface $slugger,
-        HymnRepository $hymnRepository,
-        VerseRepository $verseRepository,
-        HymnNormalizer $hymnNormalizer,
-        VerseNormalizer $verseNormalizer,
-        BookService $bookService,
-    ) {
-        $this->slugger = $slugger;
-        $this->hymnRepository = $hymnRepository;
-        $this->verseRepository = $verseRepository;
-        $this->hymnNormalizer = $hymnNormalizer;
-        $this->verseNormalizer = $verseNormalizer;
-        $this->bookService = $bookService;
-    }
+        private readonly SluggerInterface $slugger,
+        private readonly HymnRepository $hymnRepository,
+        private readonly VerseRepository $verseRepository,
+        private readonly HymnNormalizer $hymnNormalizer,
+        private readonly VerseNormalizer $verseNormalizer,
+        private readonly BookService $bookService,
+    ) {}
 
     public function getHymnsByBookId(string $bookId, int $startNumber, int $endNumber): ResultDto
     {
@@ -54,6 +35,19 @@ class HymnService extends Service
             $hymns = $this->hymnNormalizer->normalizeArray($hymns);
         } catch (Throwable) {
             return $this->makeResultDto(false, [], 'Cannot retrieve hymns by book id: ' . $bookId);
+        }
+
+        return $this->makeResultDto(true, $hymns, 'Successfully retrieved hymns');
+    }
+
+    public function getHymnsByCategory(string $category, int $offset, int $limit): ResultDto
+    {
+        try {
+            $category = trim($category);
+            $hymns = $this->hymnRepository->getHymnsByCategory($category, $offset, $limit);
+            $hymns = $this->hymnNormalizer->normalizeArrayWithVerses($hymns);
+        } catch (Throwable) {
+            return $this->makeResultDto(false, [], 'Cannot retrieve hymns by category: ' . $category);
         }
 
         return $this->makeResultDto(true, $hymns, 'Successfully retrieved hymns');
@@ -138,15 +132,15 @@ class HymnService extends Service
         return array_values($result);
     }
 
-    public function getHymnCategoriesByBookId(string $bookId): ResultDto
+    public function getHymnCategories(): ResultDto
     {
         try {
-            $result = $this->hymnRepository->getHymnCategoriesByBookId($bookId);
-        } catch (Throwable) {
-            return $this->makeResultDto(false, [], 'Not found');
+            $categories = $this->hymnRepository->getHymnCategories();
+        } catch (Throwable $e) {
+            return $this->makeResultDto(false, $e, 'Not found');
         }
 
-        return $this->makeResultDto(true, $result, 'Successfully retrieved hymn categories');
+        return $this->makeResultDto(true, $categories, 'Successfully retrieved hymn categories');
     }
 
     public function getUpdatedHymns(string $afterDate): ResultDto

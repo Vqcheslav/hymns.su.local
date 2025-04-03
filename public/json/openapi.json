@@ -46,6 +46,31 @@
         }
       }
     },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Get categories",
+        "description": "Returns categories",
+        "operationId": "getCategories",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoriesResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error: Internal Server Error. See ServerError in Schemas"
+          }
+        }
+      }
+    },
     "/hymns/book/{book_id}/{start_number}/{end_number}": {
       "get": {
         "tags": [
@@ -273,6 +298,19 @@
           }
         }
       },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Божья любовь и величие"
+          },
+          "total_songs": {
+            "type": "integer",
+            "example": 48
+          }
+        }
+      },
       "Hymn": {
         "type": "object",
         "properties": {
@@ -342,6 +380,30 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Book"
+            }
+          },
+          "status": {
+            "type": "integer",
+            "example": 200
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "CategoriesResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Category"
             }
           },
           "status": {

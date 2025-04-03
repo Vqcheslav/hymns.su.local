@@ -118,6 +118,23 @@
                     </ul>
                 </nav>
             </div>
+            <div id="categoryCollection" class="py-2 d-flex flex-wrap gap-2">
+                <nav aria-label="Category Collection">
+                    <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        ${ selectedCategory.title }$
+                    </button>
+                    <ul class="dropdown-menu overflow-auto border-4 border-success-subtle shadow-lg">
+                        <li v-for="category in categories" class="cursor-pointer">
+                            <a
+                                @click.prevent="selectCategory(category)"
+                                :class="{'dropdown-item': true, 'text-bg-success': category.title === selectedCategory.title }"
+                                href="#"
+                            >${ category.title }$</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
             <nav class="user-select-none text-center fw-bold" aria-label="Page navigation">
                 <ul class="pagination" style="--bs-pagination-font-size: 0.9rem">
                     <li :class="{ 'page-item': true, 'disabled': currentPage === 1 }">
@@ -162,16 +179,23 @@
                     </li>
                 </ul>
             </nav>
-            <div id="hymnsCollection" class="my-5 d-grid gap-2">
+            <div id="hymnsCollection" class="my-5 d-grid gap-3">
                 <div v-if="hymns.length === 0" class="fs-5 mh-100" style="height: 100vh;">
                     ${ hymnCollectionLabel }$
                 </div>
 
-                <div v-for="hymn in hymns">
-                    <p @click="openHymn(hymn)" class="m-0 fs-5 cursor-pointer">
-                        <span class="fw-bold">${ hymn.number }$</span>
-                        <span class="ms-3">${ hymn.title + '…' }$</span>
-                    </p>
+                <div
+                    v-for="hymn in hymns"
+                    @click="openHymn(hymn)"
+                    class="m-0 cursor-pointer d-flex gap-3 align-items-center"
+                >
+                    <span
+                        class="fs-5 fw-bold rounded-pill badge text-body border border-success bg-success-subtle"
+                    >${ hymn.number }$</span>
+                    <div class="d-grid gap-1">
+                        <span class="fw-bold text-overflow-ellipsis">${ hymn.title + '…' }$</span>
+                        <span class="small">${ hymn.book_title }$</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -257,9 +281,20 @@
                 const searchResults = ref([])
                 const searchResultsLabel = ref('')
                 const selectedBook = ref({})
+                const selectedCategory = ref('Не выбрано')
+                const emptyBook = {
+                    book_id: 'empty',
+                    title: 'Сборник: не выбран',
+                    total_songs: 0,
+                }
+                const emptyCategory = {
+                    title: 'Категория: не выбрана',
+                    total_songs: 0
+                }
                 const hymns = ref([])
                 const hymnCollectionLabel = ref('Загрузка…')
                 const books = ref([])
+                const categories = ref([])
                 const openedHymn = ref({
                     book_title: 'Загрузка…',
                     number: 'Загрузка',
@@ -321,14 +356,27 @@
                     }
                 }
 
+                async function updateCategories () {
+                    let responseJson = await getData('/api/v1/categories')
+
+                    for (let categoryId in responseJson.data) {
+                        categories.value.push(responseJson.data[categoryId])
+                    }
+                }
+
                 async function updateHymns () {
                     hymnCollectionLabel.value = 'Загрузка…'
                     let startNumber = currentPage.value * SONGS_PER_PAGE - SONGS_PER_PAGE
                     let endNumber = currentPage.value * SONGS_PER_PAGE
+                    let uri = '/api/v1/hymns/'
 
-                    let responseJson = await getData(
-                        '/api/v1/hymns/book/' + selectedBook.value.book_id + '/' + startNumber + '/' + endNumber,
-                    )
+                    if (selectedBook.value.book_id !== emptyBook.book_id) {
+                        uri += 'book/' + selectedBook.value.book_id + '/' + startNumber + '/' + endNumber
+                    } else {
+                        uri += 'category/' + startNumber + '/' + SONGS_PER_PAGE + '?category=' + selectedCategory.value.title
+                    }
+
+                    let responseJson = await getData(uri)
                     hymns.value = responseJson.data
 
                     if (hymns.value.length === 0) {
@@ -342,8 +390,21 @@
                     }
 
                     selectedBook.value = book
+                    selectedCategory.value = emptyCategory
                     currentPage.value = 1
                     maxPage.value = Math.ceil(Number((book.total_songs / SONGS_PER_PAGE).toFixed(2)))
+                    updateHymns()
+                }
+
+                function selectCategory (category) {
+                    if (selectedCategory.value === category.title) {
+                        return
+                    }
+
+                    selectedCategory.value = category
+                    selectedBook.value = emptyBook
+                    currentPage.value = 1
+                    maxPage.value = Math.ceil(Number((category.total_songs / SONGS_PER_PAGE).toFixed(2)))
                     updateHymns()
                 }
 
@@ -467,6 +528,7 @@
                 }
 
                 updateBooks()
+                updateCategories()
 
                 selectBook({
                     book_id: 'song-of-rebirth-ehvda',
@@ -484,10 +546,13 @@
                     searchResults,
                     searchResultsLabel,
                     selectedBook,
+                    selectedCategory,
                     selectBook,
+                    selectCategory,
                     hymns,
                     hymnCollectionLabel,
                     books,
+                    categories,
                     typeToSearchInput,
                     searchHymns,
                     openedHymn,

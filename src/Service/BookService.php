@@ -39,13 +39,13 @@ class BookService extends Service
 
     public function getCorrectBookId(string $bookId, int $endNumber): string
     {
-        if ($bookId === 'song-of-rebirth-ehvda' && $endNumber < 2401) {
-            return 'song-of-rebirth-3400';
+        if ($bookId === 'song-of-rebirth-3400' && $endNumber < 2401) {
+            return 'song-of-rebirth-ehvda';
         }
 
         $booksResultDto = $this->getBooks();
         $bookIds = array_keys($booksResultDto->getData());
 
-        return in_array($bookId, $bookIds, true) ? $bookId : 'song-of-rebirth-3400';
+        return in_array($bookId, $bookIds, true) ? $bookId : 'song-of-rebirth-ehvda';
     }
 }

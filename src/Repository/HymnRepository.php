@@ -71,6 +71,18 @@ class HymnRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getHymnsByCategory(string $category, int $offset, int $limit = 100) {
+        return $this->createQueryBuilder('h')
+            ->select('h')
+            ->andWhere('h.category = :category')
+            ->orderBy('h.number', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->setParameter('category', $category)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getHymnsWithVerses(string $bookId, int $startNumber, int $endNumber, int $limit = 1000)
     {
         return $this->createQueryBuilder('h')
@@ -130,13 +142,12 @@ class HymnRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getHymnCategoriesByBookId(string $bookId)
+    public function getHymnCategories()
     {
         return $this->createQueryBuilder('h')
-            ->select('DISTINCT h.category')
-            ->andWhere('h.book = :bookId')
+            ->select('h.category as title, COUNT(h.category) as total_songs')
+            ->groupBy('h.category')
             ->orderBy('h.category', 'ASC')
-            ->setParameter('bookId', $bookId)
             ->getQuery()
             ->getResult();
     }

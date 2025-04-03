@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Controller\Controller;
 use App\Service\HymnService;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -14,6 +15,14 @@ class HymnsController extends  Controller
     public function __construct(HymnService $hymnsService)
     {
         $this->hymnsService = $hymnsService;
+    }
+
+    #[Route("/api/v1/categories", name: "hymns.getCategories", methods: ["GET"])]
+    public function getHymnCategories(): Response
+    {
+        $resultDto = $this->hymnsService->getHymnCategories();
+
+        return $this->jsonResponseFromDto($resultDto);
     }
 
     #[Route("/api/v1/hymns/book/{bookId}/{startNumber<\d+>}/{endNumber<\d+>}", name: "hymns.getHymnsByBookId", methods: ["GET"])]
@@ -28,6 +37,15 @@ class HymnsController extends  Controller
     public function getHymnsWithVerses(string $bookId, int $startNumber, int $endNumber): Response
     {
         $resultDto = $this->hymnsService->getHymnsWithVerses($bookId, $startNumber, $endNumber);
+
+        return $this->jsonResponseFromDto($resultDto);
+    }
+
+    #[Route("/api/v1/hymns/category/{offset<\d+>}/{limit<\d+>}", name: "hymns.getHymnsByCategory", methods: ["GET"])]
+    public function getHymnsByCategory(int $offset, int $limit, Request $request): Response
+    {
+        $category = (string) $request->get('category', '');
+        $resultDto = $this->hymnsService->getHymnsByCategory($category, $offset, $limit);
 
         return $this->jsonResponseFromDto($resultDto);
     }
