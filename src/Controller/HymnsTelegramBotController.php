@@ -22,10 +22,6 @@ class HymnsTelegramBotController extends Controller
         $data = $request->toArray();
         $this->logger->info(json_encode($data));
 
-        if (empty($data['message']['chat']['id']) || empty($data['message']['text'])) {
-            return $this->jsonResponse(false, [], 'Empty message in request', 422);
-        }
-
         $resultDto = $this->hymnsTelegramBotService->processMessage($data);
 
         if ($resultDto->hasErrors()) {

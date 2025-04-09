@@ -24,7 +24,11 @@ class HymnsTelegramBotService extends Service
 
     public function processMessage(array $data): ResultDto
     {
-        $messageText = (string) ($data['message']['text'] ?? '');
+        if (empty($data['message']['chat']['id'])) {
+            return $this->makeResultDto(false, [], 'Empty message chat id in request', 422);
+        }
+
+        $messageText = (string) ($data['message']['text'] ?? '/help');
 
         if (str_starts_with($messageText, '/')) {
             $resultMessage = $this->processCommand($messageText);
