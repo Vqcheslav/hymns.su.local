@@ -13,14 +13,14 @@ class HymnsTelegramBotController extends Controller
 {
     public function __construct(
         private readonly HymnsTelegramBotService $hymnsTelegramBotService,
+        private readonly LoggerInterface $logger
     ) {}
 
     #[Route("/bot/telegram", name: "hymns_telegram_bot", methods: ["GET", "HEAD", "POST"])]
-    public function processMessage(Request $request, LoggerInterface $logger): JsonResponse
+    public function processMessage(Request $request): JsonResponse
     {
         $data = $request->toArray();
-
-        $logger->info(json_encode($data));
+        $this->logger->info(json_encode($data));
 
         if (empty($data['message']['chat']['id']) || empty($data['message']['text'])) {
             return $this->jsonResponse(false, [], 'Empty message in request', 422);
@@ -29,7 +29,7 @@ class HymnsTelegramBotController extends Controller
         $resultDto = $this->hymnsTelegramBotService->processMessage($data);
 
         if ($resultDto->hasErrors()) {
-            $logger->warning($resultDto);
+            $this->logger->warning($resultDto);
         }
 
         return $this->jsonResponseFromDto($resultDto);
