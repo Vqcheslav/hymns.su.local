@@ -24,35 +24,15 @@ class HymnsTelegramBotService extends Service
 
     public function processMessage(array $data): ResultDto
     {
-        $messageText = $data['message']['text'];
+        $messageText = (string) ($data['message']['text'] ?? '');
 
         if (str_starts_with($messageText, '/')) {
-            if ($messageText === '/start' || $messageText === '/help') {
-                $resultMessage = self::DESCRIPTION;
-            } else {
-                $hymnId = str_replace('_', '-', substr($messageText, 1));
-                $hymnResultDto = $this->hymnService->getHymnByHymnId($hymnId);
-
-                if ($hymnResultDto->hasErrors()) {
-                    $resultMessage = $hymnResultDto->getDetail();
-                } else {
-                    $resultMessage = $this->getTextFromHymn($hymnResultDto->getData());
-                }
-            }
+            $resultMessage = $this->processCommand($messageText);
         } else {
-            $hymnsResultDto = $this->hymnService->searchHymns($messageText, self::SEARCH_RESULTS_LIMIT);
-            $hymns = $hymnsResultDto->getData();
-
-            if ($hymnsResultDto->hasErrors()) {
-                $resultMessage = $hymnsResultDto->getDetail();
-            } elseif (empty($hymns)) {
-                $resultMessage = 'Ничего не найдено';
-            } else {
-                $resultMessage = $this->getMessageWithActionsFromHymnsArray($hymns);
-            }
+            $resultMessage = $this->processText($messageText);
         }
 
-        return $this->sendMessage($data['message']['chat']['id'], $resultMessage, $data['message']['message_id']);
+        return $this->sendMessage($data['message']['chat']['id'], $resultMessage);
     }
 
     public function getMessageWithActionsFromHymnsArray(array $hymns): string
@@ -122,13 +102,13 @@ class HymnsTelegramBotService extends Service
         return sprintf('<a href="%s">%s</a>', $url, 'Сообщить об ошибке');
     }
 
-    private function sendMessage(int $chatId, string $text, int $replyTo = null, string $parseMode = 'html'): ResultDto
+    private function sendMessage(int $chatId, string $text): ResultDto
     {
         try {
             $responseQueryParams = [
                 'chat_id'                  => $chatId,
                 'text'                     => $text,
-                'parse_mode'               => $parseMode,
+                'parse_mode'               => 'html',
                 'disable_web_page_preview' => true,
             ];
             $url = sprintf('https://api.telegram.org/bot%s/sendMessage', $_SERVER['TELEGRAM_BOT_TOKEN']);
@@ -144,5 +124,39 @@ class HymnsTelegramBotService extends Service
         }
 
         return $this->makeResultDto(true, [], 'Successfully sent message');
+    }
+
+    private function processCommand(string $messageText): string
+    {
+        if ($messageText === '/start' || $messageText === '/help') {
+            $resultMessage = self::DESCRIPTION;
+        } else {
+            $hymnId = str_replace('_', '-', substr($messageText, 1));
+            $hymnResultDto = $this->hymnService->getHymnByHymnId($hymnId);
+
+            if ($hymnResultDto->hasErrors()) {
+                $resultMessage = $hymnResultDto->getDetail();
+            } else {
+                $resultMessage = $this->getTextFromHymn($hymnResultDto->getData());
+            }
+        }
+
+        return $resultMessage;
+    }
+
+    private function processText(string $messageText): string
+    {
+        $hymnsResultDto = $this->hymnService->searchHymns($messageText, self::SEARCH_RESULTS_LIMIT);
+        $hymns = $hymnsResultDto->getData();
+
+        if ($hymnsResultDto->hasErrors()) {
+            $resultMessage = $hymnsResultDto->getDetail();
+        } elseif (empty($hymns)) {
+            $resultMessage = 'Ничего не найдено';
+        } else {
+            $resultMessage = $this->getMessageWithActionsFromHymnsArray($hymns);
+        }
+
+        return $resultMessage;
     }
 }
