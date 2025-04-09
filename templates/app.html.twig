@@ -23,13 +23,18 @@
             for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
             k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
         (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-        ym(95449889, "init", {
+        ym(100916313, "init", {
             clickmap:true,
             trackLinks:true,
             accurateTrackBounce:true,
             webvisor:true
         });
     </script>
+    <noscript>
+        <div>
+            <img src="https://mc.yandex.ru/watch/100916313" style="position:absolute; left:-9999px;" alt="" />
+        </div>
+    </noscript>
     <!-- /Yandex.Metrika counter -->
 
     <link href="{{ asset('css/vendor/bootstrap.min.css') }}" rel="stylesheet">
@@ -41,12 +46,6 @@
 <body class="new-scrollbar">
     {% set currentRouteName = app.request.attributes.get('_route') %}
     {% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
-
-    <!-- Yandex.Metrika counter -->
-    <noscript>
-        <div><img src="https://mc.yandex.ru/watch/95449889" style="position:absolute; left:-9999px;" alt="" /></div>
-    </noscript>
-    <!-- /Yandex.Metrika counter -->
 
     {% block images %}
         {%  include 'components/svg.html.twig' %}
