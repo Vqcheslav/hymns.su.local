@@ -9,16 +9,11 @@ use App\Service\VerseService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
 class TestController extends Controller
 {
-    public const BOOK_ID_CUSTOM = 'custom';
-
-    public const BOOK_ID_3400 = 'song-of-rebirth-3400';
-
-    public const BOOK_ID_EHVDA = 'song-of-rebirth-ehvda';
-
-    public const BOOK_ID_DEMYANSK = 'songbook-demyansk';
+    public const string BOOK_ID_EHVDA = 'song-of-rebirth-ehvda';
 
     private BookService $bookService;
 
@@ -32,9 +27,8 @@ class TestController extends Controller
         BookService $bookService,
         HymnService $hymnService,
         VerseService $verseService,
-        EntityManagerInterface $entityManager
-    )
-    {
+        EntityManagerInterface $entityManager,
+    ) {
         $this->bookService = $bookService;
         $this->hymnsService = $hymnService;
         $this->verseService = $verseService;
@@ -45,7 +39,8 @@ class TestController extends Controller
     public function fixUkrainianVerses(int $startNumber = 2400): Response
     {
         $endNumber = $startNumber + 100;
-        $hymns = $this->entityManager->getRepository(Hymn::class)
+        $hymns = $this->entityManager
+            ->getRepository(Hymn::class)
             ->getHymnsWithVerses(self::BOOK_ID_EHVDA, $startNumber, $endNumber);
         $fixedHymnIds = [];
 
@@ -81,7 +76,7 @@ class TestController extends Controller
         $hymns = $this->hymnsService->convertTxtPart($hymns, $startHymnNumber);
         file_put_contents(
             __DIR__ . sprintf('/../../public/json/%s.json', $filename),
-            $this->bookService->jsonEncode($hymns, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)->getData()
+            $this->bookService->jsonEncode($hymns, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)->getData(),
         );
 
         return $this->jsonResponse(true, $hymns, sprintf('Songs of %s retrieved', $bookId));
@@ -98,7 +93,7 @@ class TestController extends Controller
 
         $filenameOfCategories = __DIR__ . sprintf('/../../public/json/categories_%s.json', $filename);
 
-        if (! file_exists($filenameOfCategories)) {
+        if ( ! file_exists($filenameOfCategories)) {
             $filenameOfCategories = __DIR__ . '/../../public/json/categories_all.json';
         }
 
@@ -136,7 +131,7 @@ class TestController extends Controller
             try {
                 $this->entityManager->commit();
                 $this->entityManager->flush();
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 //$this->entityManager->rollback();
 
                 return $this->jsonResponse(false, $e, $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
