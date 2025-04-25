@@ -24,11 +24,12 @@ class HymnsTelegramBotService extends Service
 
     public function processMessage(array $data): ResultDto
     {
-        if (empty($data['message']['chat']['id'])) {
-            return $this->makeResultDto(false, [], 'Empty message chat id in request', 422);
-        }
+        $chatId = $data['message']['chat']['id'] ?? $data['edited_message']['chat']['id'] ?? 0;
+        $messageText = (string) ($data['message']['text'] ?? $data['edited_message']['text'] ?? '/help');
 
-        $messageText = (string) ($data['message']['text'] ?? '/help');
+        if (empty($chatId)) {
+            return $this->makeResultDto(false, $data, 'Empty message chat id in request', 422);
+        }
 
         if (str_starts_with($messageText, '/')) {
             $resultMessage = $this->processCommand($messageText);
@@ -36,7 +37,7 @@ class HymnsTelegramBotService extends Service
             $resultMessage = $this->processText($messageText);
         }
 
-        return $this->sendMessage($data['message']['chat']['id'], $resultMessage);
+        return $this->sendMessage($chatId, $resultMessage);
     }
 
     public function getMessageWithActionsFromHymnsArray(array $hymns): string
@@ -108,26 +109,27 @@ class HymnsTelegramBotService extends Service
 
     private function sendMessage(int $chatId, string $text): ResultDto
     {
+        $queryParams = [
+            'chat_id'                  => $chatId,
+            'text'                     => $text,
+            'parse_mode'               => 'html',
+            'disable_web_page_preview' => true,
+        ];
+
         try {
-            $responseQueryParams = [
-                'chat_id'                  => $chatId,
-                'text'                     => $text,
-                'parse_mode'               => 'html',
-                'disable_web_page_preview' => true,
-            ];
             $url = sprintf('https://api.telegram.org/bot%s/sendMessage', $_SERVER['TELEGRAM_BOT_TOKEN']);
 
-            $response = $this->httpClient->request('GET', $url, ['query' => $responseQueryParams]);
+            $response = $this->httpClient->request('GET', $url, ['query' => $queryParams]);
             $responseData = $response->toArray();
 
             if (($responseData['ok'] ?? false) === false) {
                 return $this->makeResultDto(false, $responseData, $responseData['description'] ?? 'Error', 500);
             }
         } catch (Throwable $e) {
-            return $this->makeResultDto(false, [], $e->getMessage(), 500);
+            return $this->makeResultDto(false, $queryParams, $e->getMessage(), 500);
         }
 
-        return $this->makeResultDto(true, [], 'Successfully sent message');
+        return $this->makeResultDto(true, $queryParams, 'Successfully sent message');
     }
 
     private function processCommand(string $messageText): string
