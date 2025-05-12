@@ -79,9 +79,13 @@ class HymnService extends Service
         return $this->makeResultDto(true, $hymn, 'Successfully retrieved hymn');
     }
 
+    public function prepareSearchRequest(string $search): string
+    {
+        return trim(preg_replace('/\p{P}/u', ' ', $search));
+    }
+
     public function getSearchExpression(string $search): string
     {
-        $search = trim(str_replace([',', '.', ':', ';', '  '], [' ', ' ', ' ', ' ', ' '], $search));
         $exploded = explode(' ', $search);
         $exploded = array_filter($exploded);
 
@@ -90,7 +94,7 @@ class HymnService extends Service
 
     public function searchHymns(string $search, int $limit = self::SEARCH_RESULTS_LIMIT): ResultDto
     {
-        $search = trim(str_replace([',', '.', ':', ';', '  '], [' ', ' ', ' ', ' ', ' '], $search));
+        $search = $this->prepareSearchRequest($search);
 
         try {
             if (is_numeric($search)) {
@@ -199,7 +203,8 @@ class HymnService extends Service
         }
 
         $hymn = new Hymn();
-        $hymn->setHymnId($hymnId)
+        $hymn
+            ->setHymnId($hymnId)
             ->setBook($book)
             ->setNumber($number)
             ->setTitle(trim($title))
