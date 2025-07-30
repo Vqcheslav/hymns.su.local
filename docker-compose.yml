@@ -3,10 +3,12 @@ services:
         image: nginx:latest
         ports:
             - "80:80"
+            - "443:443"
         volumes:
+            - "../certificates/:/var/www/certificates/:ro"
             - "./.docker/nginx/local.conf:/etc/nginx/conf.d/local.conf"
             - "./.docker/nginx/logs/:/var/log/nginx/"
-            - "./:/var/www/hymns.su.local/"
+            - "./:/var/www/hymns.vq.local/"
         links:
             - php-fpm
 
@@ -16,14 +18,14 @@ services:
             - "./.docker/php-fpm/local.ini:/usr/local/etc/php/conf.d/40-local.ini"
             - "./.docker/php-fpm/fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
             - "./.docker/php-fpm/logs/:/var/log/"
-            - "./:/var/www/hymns.su.local/"
+            - "./:/var/www/hymns.vq.local/"
         links:
             - mysql
             - redis
 
     mysql:
         image: mysql:8
-        hostname: hymns.su.local
+        hostname: hymns.vq.local
         ports:
             - "3306:3306"
         volumes:
@@ -41,7 +43,7 @@ services:
 
     redis:
         image: redis:7-alpine
-        hostname: hymns.su.local
+        hostname: hymns.vq.local
         ports:
             - "6379:6379"
         volumes:
