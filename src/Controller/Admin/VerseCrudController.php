@@ -6,6 +6,7 @@ use App\Entity\Hymn;
 use App\Entity\Verse;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -43,10 +44,11 @@ class VerseCrudController extends AbstractCrudController
                 ->hideOnForm()
                 ->setSortable(true),
             AssociationField::new('hymn', 'Hymn Id')
-                ->setQueryBuilder(function ($queryBuilder) {
+                ->setQueryBuilder(function (QueryBuilder $queryBuilder) {
                     return $queryBuilder->orderBy('entity.updatedAt', 'DESC');
                 }),
-            IntegerField::new('position'),
+            IntegerField::new('position')
+                ->setHtmlAttribute('autocomplete', 'off'),
             BooleanField::new('isChorus'),
             TextareaField::new('lyrics'),
             TextareaField::new('chords')

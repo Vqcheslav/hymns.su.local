@@ -16,7 +16,7 @@ class DashboardController extends AbstractDashboardController
 {
     public function index(): Response
     {
-        return $this->redirectToRoute('admin_book_index');
+        return $this->redirectToRoute('admin_verse_index');
     }
 
     public function configureDashboard(): Dashboard

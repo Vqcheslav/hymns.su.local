@@ -7,11 +7,13 @@ use App\Entity\Hymn;
 use App\Service\HymnService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -40,27 +42,40 @@ class HymnCrudController extends AbstractCrudController
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
-                return $action->displayIf(function (Hymn $hymn) {
-                    return $hymn->getBook()?->getBookId() === 'custom';
-                });
-            });
+            ->update(
+                pageName: Crud::PAGE_INDEX,
+                actionName: Action::DELETE,
+                callable: function (Action $action) {
+                    return $action->displayIf(function (Hymn $hymn) {
+                        return $hymn->getBook()?->getBookId() === 'custom';
+                    });
+                },
+            );
     }
 
     public function configureFields(string $pageName): iterable
     {
+        $categories = $this->hymnService->getHymnCategories()->getData();
+        $titles = array_column($categories, 'title');
+        $choices = array_combine($titles, $titles);
+
         return [
             TextField::new('hymnId')
                 ->setLabel('Hymn Id')
                 ->setDisabled()
                 ->hideWhenCreating(),
-            AssociationField::new('book')
-                ->setLabel('Book Id')
-                ->hideOnForm(),
+            AssociationField::new('book', 'Book Id')
+                ->setQueryBuilder(function (QueryBuilder $queryBuilder) {
+                    return $queryBuilder
+                        ->where("entity.bookId in ('custom', 'songbook-demyansk')")
+                        ->orderBy('entity.bookId');
+                }),
             IntegerField::new('number')
                 ->hideWhenCreating(),
-            TextField::new('title'),
-            TextField::new('category'),
+            TextField::new('title')
+                ->setHtmlAttribute('autocomplete', 'off'),
+            ChoiceField::new('category')
+                ->setChoices($choices),
             TextField::new('tone')
                 ->hideOnIndex()
                 ->setRequired(false)
@@ -72,7 +87,7 @@ class HymnCrudController extends AbstractCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         /* @var Hymn $entityInstance */
-        $book = $entityManager->find(Book::class, 'custom');
+        $book = $entityInstance->getBook();
 
         if ( ! $book instanceof Book) {
             throw new RuntimeException('Book not found');
