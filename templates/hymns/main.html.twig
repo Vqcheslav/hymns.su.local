@@ -266,6 +266,37 @@
 
         createApp({
             delimiters: ['${', '}$'],
+            mounted () {
+                this.modalWindowElement = document.querySelector('#modalWindow')
+                let modalWindow = new bootstrap.Modal(this.modalWindowElement)
+
+                this._hashListener = function () {
+                    let hymn_id = window.location.hash.substring(1)
+
+                    if (hymn_id !== '') {
+                        modalWindow.show()
+
+                        this.getHymn({ hymn_id: hymn_id })
+                    } else {
+                        modalWindow.hide()
+                    }
+                }
+
+                this._modalCloseListener = function () {
+                    document.title = 'Гимны'
+                    history.pushState('', document.title, window.location.pathname + window.location.search)
+                }
+
+                let hashListener = this._hashListener.bind(this)
+
+                hashListener()
+                window.addEventListener('hashchange', hashListener)
+                this.modalWindowElement.addEventListener('hidden.bs.modal', this._modalCloseListener)
+            },
+            beforeDestroy () {
+                window.removeEventListener('hashchange', this._hashListener)
+                this.modalWindowElement.removeEventListener('hidden.bs.modal', this._modalCloseListener)
+            },
             setup () {
                 const KEY_OF_MODAL_BODY_FONT_SIZE = 'modal_window_body_font_size'
                 const SONGS_PER_PAGE = 100
@@ -467,9 +498,10 @@
                 }
 
                 async function openHymn (hymn) {
-                    let modalWindow = new bootstrap.Modal('#modalWindow')
-                    modalWindow.show()
+                    window.location.hash = hymn.hymn_id
+                }
 
+                async function getHymn (hymn) {
                     if (noSleepCheck.value !== true) {
                         noSleepCheck.value = false
                     }
@@ -482,6 +514,8 @@
                         + '%0AСборник%3A%20'
                         + hymn.book_title
                         + '%0AКуплет%3A%20%0AОписание%3A%20%0A'
+
+                    document.title = hymn.title
 
                     openedHymn.value = hymn
                 }
@@ -559,6 +593,7 @@
                     openedHymn,
                     getHymnNumberAndTitle,
                     openHymn,
+                    getHymn,
                     getVerseLyricsHtml,
                     getVerseLyricsText,
                     openedHymnLyricsFontSize,
