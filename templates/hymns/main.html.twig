@@ -209,8 +209,12 @@
                                 ${ getHymnNumberAndTitle(openedHymn) }$
                             </h1>
                             <div class="d-flex align-items-center flex-wrap">
-                                <div id="modalWindowSubtitle2" class="m-0 small pe-1">${ openedHymn.book_title }$</div>
-                                <div id="modalWindowSubtitle" class="m-0 small">${ ':: ' + openedHymn.category }$</div>
+                                <div id="modalWindowSubtitle2" class="m-0 small pe-1">
+                                    ${ openedHymn.book_title || 'Hymn not found' }$
+                                </div>
+                                <div id="modalWindowSubtitle" class="m-0 small">
+                                    ${ ':: ' + (openedHymn.category || 'please close this window')  }$
+                                </div>
                             </div>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -545,7 +549,7 @@
                 }
 
                 function getHymnNumberAndTitle (hymn) {
-                    return hymn.number + ': ' + hymn.title + '…'
+                    return (hymn.number || 'Гимн не найден') + ': ' + (hymn.title || 'закройте это окно') + '…'
                 }
 
                 function copyHymnText (hymn) {
