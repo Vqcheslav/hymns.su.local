@@ -2,7 +2,8 @@
 <html lang="{{ app.locale }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="Content-Security-Policy" content="">
     <meta name="description" content="{% block description %}Hymns{% endblock %}">
@@ -17,23 +18,25 @@
     <script src="{{ asset('js/vendor/color-modes.js') }}"></script>
 
     <!-- Yandex.Metrika counter -->
-    <script type="text/javascript" >
-        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-        ym(100916313, "init", {
-            clickmap:true,
-            trackLinks:true,
-            accurateTrackBounce:true,
-            webvisor:true
-        });
+    <script type="text/javascript">
+        (function (m, e, t, r, i, k, a) {
+            m[i] = m[i] || function () {(m[i].a = m[i].a || []).push(arguments)}
+            m[i].l = 1 * new Date()
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return }}
+            k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+        })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=105245832', 'ym')
+
+        ym(105245832, 'init', {
+            ssr: true,
+            webvisor: true,
+            clickmap: true,
+            ecommerce: 'dataLayer',
+            accurateTrackBounce: true,
+            trackLinks: true,
+        })
     </script>
     <noscript>
-        <div>
-            <img src="https://mc.yandex.ru/watch/100916313" style="position:absolute; left:-9999px;" alt="" />
-        </div>
+        <div><img src="https://mc.yandex.ru/watch/105245832" style="position:absolute; left:-9999px;" alt=""/></div>
     </noscript>
     <!-- /Yandex.Metrika counter -->
 
@@ -44,32 +47,34 @@
     {% block styles %}{% endblock %}
 </head>
 <body class="new-scrollbar">
-    {% set currentRouteName = app.request.attributes.get('_route') %}
-    {% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
 
-    {% block images %}
-        {%  include 'components/svg.html.twig' %}
-    {% endblock %}
+{% set currentRouteName = app.request.attributes.get('_route') %}
+{% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
 
-    {% block header %}
-        {%  include 'components/header.html.twig' %}
-    {% endblock %}
+{% block images %}
+    {% include 'components/svg.html.twig' %}
+{% endblock %}
 
-    {% block toast %}
-        {%  include 'components/toast.html.twig' %}
-    {% endblock %}
+{% block header %}
+    {% include 'components/header.html.twig' %}
+{% endblock %}
 
-    <main class="main">
-        {% block main %}{% endblock %}
-    </main>
+{% block toast %}
+    {% include 'components/toast.html.twig' %}
+{% endblock %}
 
-    {% block footer %}
-        {%  include 'components/footer.html.twig' %}
-    {% endblock %}
+<main class="main">
+    {% block main %}{% endblock %}
+</main>
 
-    <script src="{{ asset('js/vendor/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('js/app.js') }}?version=1.6"></script>
+{% block footer %}
+    {% include 'components/footer.html.twig' %}
+{% endblock %}
 
-    {% block scripts %}{% endblock %}
+<script src="{{ asset('js/vendor/bootstrap.min.js') }}"></script>
+<script src="{{ asset('js/app.js') }}?version=1.6"></script>
+
+{% block scripts %}{% endblock %}
+
 </body>
 </html>
