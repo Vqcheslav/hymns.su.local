@@ -72,10 +72,10 @@ class TestController extends Controller
             return $this->jsonResponse(false, $bookId, 'Book not found', Response::HTTP_NOT_FOUND);
         }
 
-        $hymns = file_get_contents(__DIR__ . sprintf('/../../public/txt/%s.txt', $filename));
+        $hymns = file_get_contents(__DIR__ . sprintf('/../../public_html/txt/%s.txt', $filename));
         $hymns = $this->hymnsService->convertTxtPart($hymns, $startHymnNumber);
         file_put_contents(
-            __DIR__ . sprintf('/../../public/json/%s.json', $filename),
+            __DIR__ . sprintf('/../../public_html/json/%s.json', $filename),
             $this->bookService->jsonEncode($hymns, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)->getData(),
         );
 
@@ -91,14 +91,14 @@ class TestController extends Controller
             return $this->jsonResponse(false, $bookId, 'Book not found', Response::HTTP_NOT_FOUND);
         }
 
-        $filenameOfCategories = __DIR__ . sprintf('/../../public/json/categories_%s.json', $filename);
+        $filenameOfCategories = __DIR__ . sprintf('/../../public_html/json/categories_%s.json', $filename);
 
         if ( ! file_exists($filenameOfCategories)) {
-            $filenameOfCategories = __DIR__ . '/../../public/json/categories_all.json';
+            $filenameOfCategories = __DIR__ . '/../../public_html/json/categories_all.json';
         }
 
         $hymns = $this->bookService
-            ->jsonDecode(file_get_contents(__DIR__ . sprintf('/../../public/json/%s.json', $filename)))
+            ->jsonDecode(file_get_contents(__DIR__ . sprintf('/../../public_html/json/%s.json', $filename)))
             ->getData();
         $categories = $this->bookService
             ->jsonDecode(file_get_contents($filenameOfCategories))
