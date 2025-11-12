@@ -9,7 +9,7 @@ export default {
             <ul class="pagination" style="--bs-pagination-font-size: 0.9rem">
                 <li :class="{ 'page-item': true, 'disabled': currentPage === 1 }">
                     <a @click.prevent="$emit('update:currentPage', currentPage - 1)" class="page-link" href="#" aria-label="Prev">
-                        <span aria-hidden="true">◀</span>
+                        <span aria-hidden="true">◄</span>
                     </a>
                 </li>
                 <li v-if="currentPage - 1 > 0" class="page-item">
@@ -44,7 +44,7 @@ export default {
                 </li>
                 <li :class="{ 'page-item': true, 'disabled': currentPage === maxPage }">
                     <a @click.prevent="$emit('update:currentPage', currentPage + 1)" class="page-link" href="#" aria-label="Next">
-                        <span aria-hidden="true">▶</span>
+                        <span aria-hidden="true">►</span>
                     </a>
                 </li>
             </ul>
