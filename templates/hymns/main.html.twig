@@ -102,7 +102,7 @@
                     </div>
                 </div>
             </div>
-            <div id="booksCollection" class="mt-5 py-2 d-flex flex-wrap gap-2">
+            <div id="booksCollection" class="mt-5 d-flex flex-wrap gap-2">
                 <nav aria-label="Book Collection">
                     <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
@@ -119,7 +119,7 @@
                     </ul>
                 </nav>
             </div>
-            <div id="categoryCollection" class="pt-2 pb-3 d-flex flex-wrap gap-2">
+            <div id="categoryCollection" class="mt-3 d-flex flex-wrap gap-2">
                 <nav aria-label="Category Collection">
                     <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
@@ -136,51 +136,10 @@
                     </ul>
                 </nav>
             </div>
-            <nav class="user-select-none text-center fw-bold" aria-label="Page navigation">
-                <ul class="pagination" style="--bs-pagination-font-size: 0.9rem">
-                    <li :class="{ 'page-item': true, 'disabled': currentPage === 1 }">
-                        <a @click.prevent="currentPage = currentPage - 1" class="page-link" href="#" aria-label="Prev">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    <li v-if="currentPage - 1 > 0" class="page-item">
-                        <a @click.prevent="currentPage = currentPage - 1" class="page-link" href="#">
-                            ${ currentPage - 1 }$
-                        </a>
-                    </li>
-                    <li class="page-item active">
-                        <a @click.prevent class="page-link" href="#">
-                            ${ currentPage }$
-                        </a>
-                    </li>
-                    <li v-if="currentPage + 1 < maxPage" class="page-item">
-                        <a @click.prevent="currentPage = currentPage + 1" class="page-link" href="#">
-                            ${ currentPage + 1 }$
-                        </a>
-                    </li>
-                    <li v-if="currentPage + 2 < maxPage && currentPage === 1" class="page-item">
-                        <a @click.prevent="currentPage = currentPage + 2" class="page-link" href="#">
-                            ${ currentPage + 2 }$
-                        </a>
-                    </li>
-                    <li v-if="currentPage + 2 < maxPage" class="page-item">
-                        <a @click.prevent class="page-link" href="#">
-                            ...
-                        </a>
-                    </li>
-                    <li v-if="currentPage !== maxPage" class="page-item">
-                        <a @click.prevent="currentPage = maxPage" class="page-link" href="#">
-                            ${ maxPage }$
-                        </a>
-                    </li>
-                    <li :class="{ 'page-item': true, 'disabled': currentPage === maxPage }">
-                        <a @click.prevent="currentPage = currentPage + 1" class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            <div id="hymnsCollection" class="my-5 d-grid gap-3">
+            <div class="my-4">
+                <pagination v-model:current-page="currentPage" v-model:max-page="maxPage"></pagination>
+            </div>
+            <div id="hymnsCollection" class="d-grid gap-3">
                 <div v-if="hymns.length === 0" class="fs-5 mh-100" style="height: 100vh;">
                     ${ hymnCollectionLabel }$
                 </div>
@@ -198,6 +157,9 @@
                         <span class="small">${ hymn.book_title }$</span>
                     </div>
                 </div>
+            </div>
+            <div class="my-4">
+                <pagination v-model:current-page="currentPage" v-model:max-page="maxPage"></pagination>
             </div>
         </div>
         <div class="modal fade" id="modalWindow" tabindex="-1" aria-labelledby="modalWindowTitle" aria-hidden="true">
@@ -266,9 +228,13 @@
 
 {% block scripts %}
     <script type="module">
+        import Pagination from '/js/vue/Pagination.js'
         const { createApp, ref, watch, useTemplateRef } = Vue
 
         createApp({
+            components: {
+                Pagination
+            },
             delimiters: ['${', '}$'],
             mounted () {
                 this.modalWindowElement = document.querySelector('#modalWindow')
