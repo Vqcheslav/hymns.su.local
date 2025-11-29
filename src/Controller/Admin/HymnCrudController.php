@@ -112,8 +112,15 @@ class HymnCrudController extends AbstractCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         /* @var Hymn $entityInstance */
-        $hymnId = $this->hymnService->generateHymnId($entityInstance->getNumber(), $entityInstance->getTitle());
-        $entityInstance->setHymnId($hymnId);
+        $hymnRepository = $entityManager->getRepository(Hymn::class);
+        $oldHymnTitle = $hymnRepository->getTitleByHymnId($entityInstance->getHymnId());
+
+        // If the title has been changed, we generate a new hymn ID
+        if (mb_strtolower($entityInstance->getTitle()) !== mb_strtolower($oldHymnTitle)) {
+            $hymnId = $this->hymnService->generateHymnId($entityInstance->getNumber(), $entityInstance->getTitle());
+            $entityInstance->setHymnId($hymnId);
+        }
+
         $entityInstance->setUpdatedAt(new DateTimeImmutable());
 
         $entityManager->persist($entityInstance);

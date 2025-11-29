@@ -47,7 +47,8 @@ class HymnRepository extends ServiceEntityRepository
      */
     public function getMaxHymnNumber(string $bookId): ?int
     {
-        return $this->createQueryBuilder('h')
+        return $this
+            ->createQueryBuilder('h')
             ->select('MAX(h.number) as max_number')
             ->andWhere('h.book = :book')
             ->setParameter('book', $bookId)
@@ -57,7 +58,8 @@ class HymnRepository extends ServiceEntityRepository
 
     public function getHymnsByBookId(string $bookId, int $startNumber, int $endNumber, int $limit = 500)
     {
-        return $this->createQueryBuilder('h')
+        return $this
+            ->createQueryBuilder('h')
             ->select('h')
             ->andWhere('h.book = :book')
             ->andWhere('h.number >= :startNumber')
@@ -71,8 +73,10 @@ class HymnRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getHymnsByCategory(string $category, int $offset, int $limit = 100) {
-        return $this->createQueryBuilder('h')
+    public function getHymnsByCategory(string $category, int $offset, int $limit = 100)
+    {
+        return $this
+            ->createQueryBuilder('h')
             ->select('h')
             ->andWhere('h.category = :category')
             ->orderBy('h.number', 'ASC')
@@ -85,9 +89,10 @@ class HymnRepository extends ServiceEntityRepository
 
     public function getHymnsWithVerses(string $bookId, int $startNumber, int $endNumber, int $limit = 1000)
     {
-        return $this->createQueryBuilder('h')
+        return $this
+            ->createQueryBuilder('h')
             ->select('h', 'v')
-            ->join('h.verses', 'v')
+            ->leftJoin('h.verses', 'v')
             ->andWhere('h.book = :book')
             ->andWhere('h.number >= :startNumber')
             ->andWhere('h.number <= :endNumber')
@@ -102,9 +107,10 @@ class HymnRepository extends ServiceEntityRepository
 
     public function getHymnByHymnId(string $hymnId)
     {
-        return $this->createQueryBuilder('h')
+        return $this
+            ->createQueryBuilder('h')
             ->select('h', 'v')
-            ->join('h.verses', 'v')
+            ->leftJoin('h.verses', 'v')
             ->andWhere('h.hymnId = :hymn_id')
             ->orderBy('v.position', 'ASC')
             ->addOrderBy('v.isChorus', 'DESC')
@@ -115,10 +121,11 @@ class HymnRepository extends ServiceEntityRepository
 
     public function searchHymnsByNumber(int $number, int $limit)
     {
-        return $this->createQueryBuilder('h')
+        return $this
+            ->createQueryBuilder('h')
             ->select('b', 'h', 'v')
             ->join('h.book', 'b')
-            ->join('h.verses', 'v', Join::WITH, 'v.position = 1')
+            ->leftJoin('h.verses', 'v', Join::WITH, 'v.position = 1')
             ->andWhere('h.number = :number')
             ->orderBy('h.number', 'ASC')
             ->orderBy('b.totalSongs', 'DESC')
@@ -130,10 +137,11 @@ class HymnRepository extends ServiceEntityRepository
 
     public function searchHymnsByTitle(string $search, int $limit)
     {
-        return $this->createQueryBuilder('h')
+        return $this
+            ->createQueryBuilder('h')
             ->select('b', 'h', 'v')
             ->join('h.book', 'b')
-            ->join('h.verses', 'v', Join::WITH, 'v.position = 1')
+            ->leftJoin('h.verses', 'v', Join::WITH, 'v.position = 1')
             ->andWhere('h.title LIKE :title')
             ->orderBy('h.number', 'ASC')
             ->setParameter('title', $search)
@@ -144,7 +152,8 @@ class HymnRepository extends ServiceEntityRepository
 
     public function getHymnCategories()
     {
-        return $this->createQueryBuilder('h')
+        return $this
+            ->createQueryBuilder('h')
             ->select('h.category as title, COUNT(h.category) as total_songs')
             ->groupBy('h.category')
             ->orderBy('h.category', 'ASC')
@@ -154,7 +163,8 @@ class HymnRepository extends ServiceEntityRepository
 
     public function getUpdatedHymns(string $afterDateTime, int $limit = 500)
     {
-        return $this->createQueryBuilder('h')
+        return $this
+            ->createQueryBuilder('h')
             ->select('h.hymnId, h.updatedAt')
             ->andWhere('h.updatedAt >= :afterDateTime')
             ->orderBy('h.updatedAt', 'DESC')
@@ -162,5 +172,16 @@ class HymnRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getTitleByHymnId(string $hymnId): ?string
+    {
+        return $this
+            ->createQueryBuilder('h')
+            ->select('h.title')
+            ->andWhere('h.hymnId = :hymn_id')
+            ->setParameter('hymn_id', $hymnId)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }
