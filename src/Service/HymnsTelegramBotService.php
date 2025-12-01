@@ -17,6 +17,10 @@ class HymnsTelegramBotService extends Service
 
     public const string BOT_USERNAME = '@hymns_telegram_bot';
 
+    public const string COMMAND_START = '/start';
+
+    public const string COMMAND_HELP = '/help';
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly HymnService $hymnService,
@@ -25,7 +29,7 @@ class HymnsTelegramBotService extends Service
     public function processMessage(array $data): ResultDto
     {
         $chatId = $data['message']['chat']['id'] ?? $data['edited_message']['chat']['id'] ?? 0;
-        $messageText = (string) ($data['message']['text'] ?? $data['edited_message']['text'] ?? '/help');
+        $messageText = (string) ($data['message']['text'] ?? $data['edited_message']['text'] ?? self::COMMAND_HELP);
 
         if (empty($chatId)) {
             return $this->makeResultDto(false, $data, 'Empty message chat id in request', 422);
@@ -134,7 +138,7 @@ class HymnsTelegramBotService extends Service
 
     private function processCommand(string $messageText): string
     {
-        if ($messageText === '/start' || $messageText === '/help') {
+        if ($messageText === self::COMMAND_START || $messageText === self::COMMAND_HELP) {
             $resultMessage = self::DESCRIPTION;
         } else {
             $hymnId = str_replace('_', '-', substr($messageText, 1));
@@ -156,13 +160,17 @@ class HymnsTelegramBotService extends Service
         $hymns = $hymnsResultDto->getData();
 
         if ($hymnsResultDto->hasErrors()) {
-            $resultMessage = $hymnsResultDto->getDetail();
-        } elseif (empty($hymns)) {
-            $resultMessage = 'Ничего не найдено';
-        } else {
-            $resultMessage = $this->getMessageWithActionsFromHymnsArray($hymns);
+            return $hymnsResultDto->getDetail();
         }
 
-        return $resultMessage;
+        if (empty($hymns)) {
+            return 'Ничего не найдено';
+        }
+
+        if (count($hymns) === 1) {
+            return $this->processCommand('/' . $hymns[0]['hymn_id']);
+        }
+
+        return $this->getMessageWithActionsFromHymnsArray($hymns);
     }
 }
