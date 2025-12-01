@@ -136,7 +136,7 @@ class HymnsTelegramBotService extends Service
         return $this->makeResultDto(true, $queryParams, 'Successfully sent message');
     }
 
-    private function processCommand(string $messageText): string
+    public function processCommand(string $messageText): string
     {
         if ($messageText === self::COMMAND_START || $messageText === self::COMMAND_HELP) {
             $resultMessage = self::DESCRIPTION;
@@ -154,7 +154,7 @@ class HymnsTelegramBotService extends Service
         return $resultMessage;
     }
 
-    private function processText(string $messageText): string
+    public function processText(string $messageText): string
     {
         $hymnsResultDto = $this->hymnService->searchHymns($messageText, self::SEARCH_RESULTS_LIMIT);
         $hymns = $hymnsResultDto->getData();

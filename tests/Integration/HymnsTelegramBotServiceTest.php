@@ -35,4 +35,16 @@ class HymnsTelegramBotServiceTest extends KernelTestCase
 
         $this->assertEquals($expected, $link);
     }
+
+    public function testProcessText(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        /** @var HymnsTelegramBotService $hymnsTelegramBotService */
+        $hymnsTelegramBotService = $container->get(HymnsTelegramBotService::class);
+
+        $resultMessage = $hymnsTelegramBotService->processText('1178');
+
+        $this->assertNotEquals('', $resultMessage);
+    }
 }

@@ -9,6 +9,7 @@ use App\Normalizer\HymnNormalizer;
 use App\Normalizer\VerseNormalizer;
 use App\Repository\HymnRepository;
 use App\Repository\VerseRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Throwable;
 
@@ -25,6 +26,7 @@ class HymnService extends Service
         private readonly HymnNormalizer $hymnNormalizer,
         private readonly VerseNormalizer $verseNormalizer,
         private readonly BookService $bookService,
+        private readonly EntityManagerInterface $entityManager
     ) {}
 
     public function getHymnsByBookId(string $bookId, int $startNumber, int $endNumber): ResultDto
@@ -100,12 +102,14 @@ class HymnService extends Service
             if (is_numeric($search)) {
                 $hymns = $this->hymnRepository->searchHymnsByNumber($search, $limit);
                 $hymns = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymns);
+                $this->entityManager->clear();
             } else {
                 $searchExpression = $this->getSearchExpression($search);
                 $halfLimit = (int) round($limit / 2);
 
                 $hymnsByTitle = $this->hymnRepository->searchHymnsByTitle($searchExpression, $halfLimit);
                 $hymnsByTitle = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymnsByTitle);
+                $this->entityManager->clear();
 
                 $hymnsByLyrics = $this->verseRepository->searchVerses($searchExpression, $halfLimit);
                 $hymnsByLyrics = $this->verseNormalizer->normalizeArrayWithHymns($hymnsByLyrics);
