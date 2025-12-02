@@ -28,9 +28,6 @@
 {% block title %}Гимны{% endblock %}
 
 {% block styles %}
-    <link href="{{ asset('css/hymns/hymns.css?version=1.4') }}" rel="stylesheet">
-    <script src="{{ asset('js/vendor/nosleep.js') }}"></script>
-
     {% if app.environment is same as('prod') %}
         <script src="{{ asset('js/vendor/vue.global.prod.js') }}"></script>
     {% else %}
@@ -227,6 +224,7 @@
 {% endblock %}
 
 {% block scripts %}
+    <script src="{{ asset('js/vendor/nosleep.js') }}"></script>
     <script type="module">
         import Pagination from '/js/vue/Pagination.js?version=1'
         const { createApp, ref, watch, useTemplateRef } = Vue

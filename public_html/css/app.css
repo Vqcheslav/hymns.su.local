@@ -1,36 +1,43 @@
 body {
-    font-family: Manrope, Arial, serif;
+  font-family: Manrope, Arial, sans-serif;
 }
-
 .bi {
-    width: 1em;
-    height: 1em;
-    vertical-align: -.125em;
-    fill: currentcolor;
+  width: 1em;
+  height: 1em;
+  vertical-align: -.125em;
+  fill: currentcolor;
 }
-
 mark {
-    padding: 0;
+  padding: 0;
 }
-
 .fs-7 {
-    font-size: 0.9rem !important;
+  font-size: 0.9rem !important;
 }
-
+.cursor-pointer {
+  cursor: pointer;
+}
+.text-overflow-ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pagination .page-item {
+  min-width: 2.7rem;
+}
 /* start of scrollbar */
 .new-scrollbar::-webkit-scrollbar {
-    width: 14px;
-    height: 14px;
+  width: 14px;
+  height: 14px;
 }
-
 .new-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 9px 9px 9px 9px;
+  background: transparent;
+  border-radius: 9px 9px 9px 9px;
 }
-
 .new-scrollbar::-webkit-scrollbar-thumb {
-    background: transparent;
-    border-radius: 9px;
-    border: 1px solid rgb(129, 130, 131);
+  background: transparent;
+  border-radius: 9px;
+  border: 1px solid rgb(129, 130, 131);
 }
 /* end of scrollbar */
