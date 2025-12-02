@@ -100,22 +100,22 @@ class HymnService extends Service
 
         try {
             if (is_numeric($search)) {
-                $hymns = $this->hymnRepository->searchHymnsByNumber($search, $limit);
+                $hymns = $this->hymnRepository->searchHymnsByNumber($search);
                 $hymns = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymns);
-                $this->entityManager->clear();
             } else {
                 $searchExpression = $this->getSearchExpression($search);
-                $halfLimit = (int) round($limit / 2);
+                $halfLimit = (int) ($limit / 2);
 
                 $hymnsByTitle = $this->hymnRepository->searchHymnsByTitle($searchExpression, $halfLimit);
                 $hymnsByTitle = $this->hymnNormalizer->normalizeArrayWithFirstVerse($hymnsByTitle);
-                $this->entityManager->clear();
 
                 $hymnsByLyrics = $this->verseRepository->searchVerses($searchExpression, $halfLimit);
                 $hymnsByLyrics = $this->verseNormalizer->normalizeArrayWithHymns($hymnsByLyrics);
 
                 $hymns = $this->getUniqueHymnsFromResults($hymnsByTitle, $hymnsByLyrics);
             }
+
+            $this->entityManager->clear();
         } catch (Throwable) {
             return $this->makeResultDto(false, [], 'Cannot find hymns by: ' . $search);
         }

@@ -119,7 +119,7 @@ class HymnRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function searchHymnsByNumber(int $number, int $limit)
+    public function searchHymnsByNumber(int $number)
     {
         return $this
             ->createQueryBuilder('h')
@@ -127,10 +127,8 @@ class HymnRepository extends ServiceEntityRepository
             ->join('h.book', 'b')
             ->leftJoin('h.verses', 'v', Join::WITH, 'v.position = 1')
             ->andWhere('h.number = :number')
-            ->orderBy('h.number', 'ASC')
             ->orderBy('b.totalSongs', 'DESC')
             ->setParameter('number', $number)
-            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }
