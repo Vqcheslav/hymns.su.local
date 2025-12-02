@@ -397,7 +397,7 @@ class Toast
         toastDiv.querySelector('.toast-title').innerText = title;
         toastDiv.querySelector('.toast-body').innerText = message;
 
-        let bsToast = new bootstrap.Toast(toastDiv);
+        let bsToast = bootstrap.Toast.getOrCreateInstance(toastDiv)
 
         bsToast.show();
     }
