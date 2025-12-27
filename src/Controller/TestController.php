@@ -15,7 +15,7 @@ class TestController extends Controller
 {
     public const string BOOK_ID_EHVDA = 'song-of-rebirth-ehvda';
 
-    public const int LIMIT = 1;
+    public const int LIMIT = 30;
 
     public const array REPLACED_SYMBOLS = [
         'e' => 'е',
