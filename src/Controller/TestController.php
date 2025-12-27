@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Hymn;
+use App\Entity\Verse;
 use App\Service\BookService;
 use App\Service\HymnService;
 use App\Service\VerseService;
@@ -15,52 +15,68 @@ class TestController extends Controller
 {
     public const string BOOK_ID_EHVDA = 'song-of-rebirth-ehvda';
 
-    private BookService $bookService;
+    public const int LIMIT = 1;
 
-    private HymnService $hymnsService;
-
-    private VerseService $verseService;
-
-    private EntityManagerInterface $entityManager;
+    public const array REPLACED_SYMBOLS = [
+        'e' => 'е',
+        'E' => 'Е',
+        't' => 'т',
+        'T' => 'Т',
+        'i' => 'і',
+        'I' => 'І',
+        'o' => 'о',
+        'O' => 'О',
+        'p' => 'р',
+        'P' => 'Р',
+        'a' => 'а',
+        'A' => 'А',
+        'x' => 'х',
+        'X' => 'Х',
+        'c' => 'с',
+        'C' => 'С',
+    ];
 
     public function __construct(
-        BookService $bookService,
-        HymnService $hymnService,
-        VerseService $verseService,
-        EntityManagerInterface $entityManager,
-    ) {
-        $this->bookService = $bookService;
-        $this->hymnsService = $hymnService;
-        $this->verseService = $verseService;
-        $this->entityManager = $entityManager;
-    }
+        private readonly BookService $bookService,
+        private readonly HymnService $hymnService,
+        private readonly VerseService $verseService,
+        private readonly EntityManagerInterface $entityManager,
+    ) {}
 
-    #[Route("/test/fix/ukrainian/{startNumber}", name: "test.fix_ukrainian_songs", methods: ["GET"])]
-    public function fixUkrainianVerses(int $startNumber = 2400): Response
+    #[Route("/test/fix/russian/{index}", name: "test.fix_russian_songs", methods: ["GET"])]
+    public function fixRussianVerses(int $index = 0): Response
     {
-        $endNumber = $startNumber + 100;
-        $hymns = $this->entityManager
-            ->getRepository(Hymn::class)
-            ->getHymnsWithVerses(self::BOOK_ID_EHVDA, $startNumber, $endNumber);
-        $fixedHymnIds = [];
+        $invalidSymbols = array_keys(self::REPLACED_SYMBOLS);
+        $validSymbols = array_values(self::REPLACED_SYMBOLS);
 
-        foreach ($hymns as $hymn) {
-            foreach ($hymn->getVerses() as $verse) {
-                if (str_contains($verse->getLyrics(), 'i') || str_contains($verse->getLyrics(), 'I')) {
-                    $fixedHymnIds[] = $hymn->getHymnId();
-                    $verse->setLyrics(str_replace('i', 'і', $verse->getLyrics()));
-                    $verse->setLyrics(str_replace('I', 'І', $verse->getLyrics()));
-                }
+        $searchInvalidSymbol = $invalidSymbols[$index] ?? $invalidSymbols[0];
+        $verses = $this->entityManager
+            ->getRepository(Verse::class)
+            ->createQueryBuilder('v')
+            ->select('v', 'h')
+            ->join('v.hymn', 'h')
+            ->andWhere('v.lyrics LIKE :search')
+            ->andWhere('h.category <> :category')
+            ->orderBy('h.number', 'ASC')
+            ->setMaxResults(self::LIMIT)
+            ->setParameter('search', $this->hymnService->getSearchExpression($searchInvalidSymbol))
+            ->setParameter('category', 'Hymns in English')
+            ->getQuery()
+            ->getResult();
+        $fixedVerseIds = [];
 
-                $this->entityManager->persist($verse);
-            }
+        foreach ($verses as $verse) {
+            /* @var Verse $verse */
+            $verse->setLyrics(str_replace($invalidSymbols, $validSymbols, $verse->getLyrics()));
 
-            $this->entityManager->flush();
+            $fixedVerseIds[] = $verse->getVerseId();
+            $this->entityManager->persist($verse);
         }
 
-        $fixedHymnIds = array_values(array_unique($fixedHymnIds));
+        $this->entityManager->flush();
+        $fixedVerseIds = array_values(array_unique($fixedVerseIds));
 
-        return $this->jsonResponse(true, $fixedHymnIds, 'End Number: ' . $endNumber);
+        return $this->jsonResponse(true, $fixedVerseIds, 'Successfully fixed invalid symbol (and other): ' . $searchInvalidSymbol);
     }
 
     #[Route("/test/get-json/{bookId}/{filename}/{startHymnNumber}", name: "test.getJson", methods: ["GET"])]
@@ -73,7 +89,7 @@ class TestController extends Controller
         }
 
         $hymns = file_get_contents(__DIR__ . sprintf('/../../public_html/txt/%s.txt', $filename));
-        $hymns = $this->hymnsService->convertTxtPart($hymns, $startHymnNumber);
+        $hymns = $this->hymnService->convertTxtPart($hymns, $startHymnNumber);
         file_put_contents(
             __DIR__ . sprintf('/../../public_html/json/%s.json', $filename),
             $this->bookService->jsonEncode($hymns, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)->getData(),
@@ -104,22 +120,32 @@ class TestController extends Controller
             ->jsonDecode(file_get_contents($filenameOfCategories))
             ->getData();
         $hymnsResult = $verseResult = [];
-        $lastHymnNumber = $this->hymnsService->getMaxHymnNumber($bookId);
+        $lastHymnNumber = $this->hymnService->getMaxHymnNumber($bookId);
 
         foreach ($hymns as $data) {
-            if ($data['number'] <= $lastHymnNumber || ($lastHymnNumber > 0 && $data['number'] > $lastHymnNumber + 200)) {
+            if ($data['number'] <= $lastHymnNumber
+                || ($lastHymnNumber > 0
+                    && $data['number'] > $lastHymnNumber + 200)
+            ) {
                 continue;
             }
 
             $this->entityManager->beginTransaction();
 
-            $hymn = $this->hymnsService->parseAndCreateHymn(
-                $book, $categories, $data['number'], $data['name'], '', false
+            $hymn = $this->hymnService->parseAndCreateHymn(
+                $book,
+                $categories,
+                $data['number'],
+                $data['name'],
+                '',
+                false,
             );
             $lastHymnNumber = $data['number'];
             $hymnsResult[] = $hymn->getHymnId();
             $verseResultDto = $this->verseService->parseAndCreateVersesForHymn(
-                $hymn, $data['lyrics'], false
+                $hymn,
+                $data['lyrics'],
+                false,
             );
 
             if ($verseResultDto->hasErrors()) {
@@ -139,7 +165,7 @@ class TestController extends Controller
         }
 
         return $this->jsonResponse(true, [
-            'last_hymn_number' => $this->hymnsService->getMaxHymnNumber($bookId),
+            'last_hymn_number' => $this->hymnService->getMaxHymnNumber($bookId),
             'book'             => $bookId,
             'hymn_result'      => $hymnsResult,
             'verse_result'     => $verseResult,
