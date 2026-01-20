@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Dto\ResultDto;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
@@ -24,6 +25,7 @@ class HymnsTelegramBotService extends Service
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly HymnService $hymnService,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {}
 
     public function processMessage(array $data): ResultDto
@@ -71,10 +73,11 @@ class HymnsTelegramBotService extends Service
         }
 
         return sprintf(
-            "%s\n\n\n%s\n%s\nБот: %s",
+            "%s\n\n\n%s\n%s\nСайт: %s\nБот: %s",
             $this->getHeaderOfHymn($hymn),
             $lyrics,
             $this->getSubmitErrorLink($hymn),
+            $this->getLinkForHymn($hymn),
             self::BOT_USERNAME,
         );
     }
@@ -109,6 +112,13 @@ class HymnsTelegramBotService extends Service
         $url = sprintf('https://t.me/%s?%s', $usernameForLink, $queryParameters);
 
         return sprintf('<a href="%s">%s</a>', $url, 'Сообщить об ошибке');
+    }
+
+    public function getLinkForHymn(array $hymn): string
+    {
+        $link = $this->urlGenerator->generate(name: 'homepage', referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
+
+        return sprintf('<a href="%s#%s">%s</a>', $link, $hymn['hymn_id'], $link);
     }
 
     private function sendMessage(int $chatId, string $text): ResultDto
