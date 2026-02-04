@@ -23,7 +23,7 @@ class HymnsTelegramBotServiceTest extends KernelTestCase
             'verses'     => [],
         ]);
 
-        $this->assertEquals(477, strlen($text));
+        $this->assertEquals(469, strlen($text));
     }
 
     public function testGetSubmitErrorLink(): void
@@ -50,7 +50,7 @@ class HymnsTelegramBotServiceTest extends KernelTestCase
         $hymnsTelegramBotService = $container->get(HymnsTelegramBotService::class);
 
         $link = $hymnsTelegramBotService->getLinkForHymn(['hymn_id' => 'title']);
-        $expected = '<a href="http://localhost/#title">http://localhost/</a>';
+        $expected = '<a href="http://localhost/#title">localhost</a>';
 
         $this->assertEquals($expected, $link);
     }
