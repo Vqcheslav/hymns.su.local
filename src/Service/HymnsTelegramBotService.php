@@ -116,9 +116,10 @@ class HymnsTelegramBotService extends Service
 
     public function getLinkForHymn(array $hymn): string
     {
-        $link = $this->urlGenerator->generate(name: 'homepage', referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
+        $url = $this->urlGenerator->generate(name: 'homepage', referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
+        $domain = str_replace(['https://', 'http://'], '', trim($url, '/'));
 
-        return sprintf('<a href="%s#%s">%s</a>', $link, $hymn['hymn_id'], $link);
+        return sprintf('<a href="%s#%s">%s</a>', $url, $hymn['hymn_id'], $domain);
     }
 
     private function sendMessage(int $chatId, string $text): ResultDto
