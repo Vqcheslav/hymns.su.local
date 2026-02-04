@@ -1,6 +1,7 @@
 services:
     nginx:
         image: nginx:latest
+        stop_signal: SIGINT
         ports:
             - "80:80"
             - "443:443"
