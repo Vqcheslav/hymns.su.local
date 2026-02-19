@@ -35,5 +35,17 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Books', 'fas fa-book', Book::class);
         yield MenuItem::linkToCrud('Hymns', 'fas fa-music', Hymn::class);
         yield MenuItem::linkToCrud('Verses', 'fas fa-list', Verse::class);
+
+        yield MenuItem::section('Correcting invalid chars', 'fas fa-exclamation-triangle');
+        yield MenuItem::linkToUrl(
+            'Correction by search (e)',
+            'fas fa-edit',
+            $this->generateUrl('test.fix_russian_songs'),
+        );
+        yield MenuItem::linkToUrl(
+            'Correction by search (c)',
+            'fas fa-edit',
+            $this->generateUrl('test.fix_russian_songs', ['index' => 14]),
+        );
     }
 }
