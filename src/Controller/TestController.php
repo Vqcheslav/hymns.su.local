@@ -17,25 +17,6 @@ class TestController extends Controller
 
     public const int LIMIT = 30;
 
-    public const array REPLACED_SYMBOLS = [
-        'e' => 'е',
-        'E' => 'Е',
-        't' => 'т',
-        'T' => 'Т',
-        'i' => 'і',
-        'I' => 'І',
-        'o' => 'о',
-        'O' => 'О',
-        'p' => 'р',
-        'P' => 'Р',
-        'a' => 'а',
-        'A' => 'А',
-        'x' => 'х',
-        'X' => 'Х',
-        'c' => 'с',
-        'C' => 'С',
-    ];
-
     public function __construct(
         private readonly BookService $bookService,
         private readonly HymnService $hymnService,
@@ -46,8 +27,7 @@ class TestController extends Controller
     #[Route("/test/fix/russian/{index}", name: "test.fix_russian_songs", methods: ["GET"])]
     public function fixRussianVerses(int $index = 0): Response
     {
-        $invalidSymbols = array_keys(self::REPLACED_SYMBOLS);
-        $validSymbols = array_values(self::REPLACED_SYMBOLS);
+        $invalidSymbols = array_keys(HymnService::REPLACED_SYMBOLS);
 
         $searchInvalidSymbol = $invalidSymbols[$index] ?? $invalidSymbols[0];
         $verses = $this->entityManager
@@ -60,14 +40,14 @@ class TestController extends Controller
             ->orderBy('h.number', 'ASC')
             ->setMaxResults(self::LIMIT)
             ->setParameter('search', $this->hymnService->getSearchExpression($searchInvalidSymbol))
-            ->setParameter('category', 'Hymns in English')
+            ->setParameter('category', HymnService::CATEGORY_HYMNS_IN_ENGLISH)
             ->getQuery()
             ->getResult();
         $fixedVerseIds = [];
 
         foreach ($verses as $verse) {
             /* @var Verse $verse */
-            $verse->setLyrics(str_replace($invalidSymbols, $validSymbols, $verse->getLyrics()));
+            $verse->setLyrics($this->hymnService->replaceInvalidSymbols($verse->getLyrics()));
 
             $fixedVerseIds[] = $verse->getVerseId();
             $this->entityManager->persist($verse);

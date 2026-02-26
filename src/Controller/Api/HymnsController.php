@@ -8,14 +8,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class HymnsController extends  Controller
+class HymnsController extends Controller
 {
-    private HymnService $hymnsService;
-
-    public function __construct(HymnService $hymnsService)
-    {
-        $this->hymnsService = $hymnsService;
-    }
+    public function __construct(
+        private readonly HymnService $hymnsService,
+    ) {}
 
     #[Route("/api/v1/categories", name: "hymns.getCategories", methods: ["GET"])]
     public function getHymnCategories(): Response

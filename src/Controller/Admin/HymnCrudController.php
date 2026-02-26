@@ -96,6 +96,8 @@ class HymnCrudController extends AbstractCrudController
         $maxNumber = $book->getTotalSongs();
         $lastNumber = $maxNumber + 1;
 
+        $title = $this->hymnService->replaceInvalidSymbols($entityInstance->getTitle(), $entityInstance->getCategory());
+        $entityInstance->setTitle($title);
         $hymnId = $this->hymnService->generateHymnId($lastNumber, $entityInstance->getTitle());
         $entityInstance->setHymnId($hymnId);
         $entityInstance->setBook($book);

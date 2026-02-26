@@ -9,19 +9,15 @@ use App\Repository\VerseRepository;
 
 class VerseService extends Service
 {
-    private VerseRepository $verseRepository;
-
-    public function __construct(VerseRepository $verseRepository)
-    {
-        $this->verseRepository = $verseRepository;
-    }
+    public function __construct(
+        private readonly VerseRepository $verseRepository,
+    ) {}
 
     public function parseAndCreateVersesForHymn(
         Hymn $hymn,
         string $verses,
-        bool $flush = true
-    ): ResultDto
-    {
+        bool $flush = true,
+    ): ResultDto {
         $verseList = explode("\n", $verses);
         $verseResultList = [];
         $position = 0;
@@ -53,7 +49,7 @@ class VerseService extends Service
                     'lyrics'    => $lyrics,
                     'chords'    => '',
                 ];
-            }  else {
+            } else {
                 return $this->makeResultDto(false, $verses, 'Verse cannot be parsed', 422);
             }
         }
@@ -67,11 +63,14 @@ class VerseService extends Service
                 $verseResult['is_chorus'],
                 $verseResult['lyrics'],
                 $verseResult['chords'],
-                $flush
+                $flush,
             );
 
-            $result[] = sprintf('%d-%d-%d',
-                (int) $hymn->getHymnId(), $verseResult['position'], (int) $verseResult['is_chorus']
+            $result[] = sprintf(
+                '%d-%d-%d',
+                (int) $hymn->getHymnId(),
+                $verseResult['position'],
+                (int) $verseResult['is_chorus'],
             );
         }
 
@@ -84,11 +83,11 @@ class VerseService extends Service
         bool $isChorus,
         string $lyrics,
         string $chords,
-        bool $flush = true
-    ): Verse
-    {
+        bool $flush = true,
+    ): Verse {
         $verse = new Verse();
-        $verse->setHymn($hymn)
+        $verse
+            ->setHymn($hymn)
             ->setPosition($position)
             ->setIsChorus($isChorus)
             ->setLyrics(trim($lyrics))

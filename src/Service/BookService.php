@@ -10,15 +10,10 @@ use Throwable;
 
 class BookService extends Service
 {
-    private BookRepository $bookRepository;
-
-    private BookNormalizer $bookNormalizer;
-
-    public function __construct(BookRepository $bookRepository, BookNormalizer $bookNormalizer)
-    {
-        $this->bookRepository = $bookRepository;
-        $this->bookNormalizer = $bookNormalizer;
-    }
+    public function __construct(
+        private readonly BookRepository $bookRepository,
+        private readonly BookNormalizer $bookNormalizer,
+    ) {}
 
     public function getBookByBookId(string $bookId): ?Book
     {

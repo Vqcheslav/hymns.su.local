@@ -2,13 +2,11 @@
 
 namespace App\Dto;
 
-use Stringable;
-
-class ResultDto implements Stringable
+class ResultDto extends Dto
 {
     private bool $ok;
 
-    private $data;
+    private mixed $data;
 
     private string $detail;
 
@@ -16,15 +14,14 @@ class ResultDto implements Stringable
 
     public function __construct(
         bool $ok,
-        $data = [],
+        mixed $data = [],
         string $detail = '',
-        int $status = 200
-    )
-    {
-        $this->status = $status;
-        $this->detail = $detail;
-        $this->data = $data;
+        int $status = 200,
+    ) {
         $this->ok = $ok;
+        $this->data = $data;
+        $this->detail = $detail;
+        $this->status = $status;
     }
 
     public function hasErrors(): bool
@@ -92,10 +89,5 @@ class ResultDto implements Stringable
             'detail' => $this->detail,
             'status' => $this->status,
         ];
-    }
-
-    public function __toString(): string
-    {
-        return (string) json_encode($this->toArray());
     }
 }

@@ -19,6 +19,27 @@ class HymnService extends Service
 
     public const int HYMNS_WITH_VERSES_LIMIT = 1200;
 
+    public const string CATEGORY_HYMNS_IN_ENGLISH = 'Hymns in English';
+
+    public const array REPLACED_SYMBOLS = [
+        'e' => 'е',
+        'E' => 'Е',
+        't' => 'т',
+        'T' => 'Т',
+        'i' => 'і',
+        'I' => 'І',
+        'o' => 'о',
+        'O' => 'О',
+        'p' => 'р',
+        'P' => 'Р',
+        'a' => 'а',
+        'A' => 'А',
+        'x' => 'х',
+        'X' => 'Х',
+        'c' => 'с',
+        'C' => 'С',
+    ];
+
     public function __construct(
         private readonly SluggerInterface $slugger,
         private readonly HymnRepository $hymnRepository,
@@ -26,8 +47,17 @@ class HymnService extends Service
         private readonly HymnNormalizer $hymnNormalizer,
         private readonly VerseNormalizer $verseNormalizer,
         private readonly BookService $bookService,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {}
+
+    public function replaceInvalidSymbols(string $text, string $category = ''): string
+    {
+        if ($category === self::CATEGORY_HYMNS_IN_ENGLISH) {
+            return $text;
+        }
+
+        return str_replace(array_keys(self::REPLACED_SYMBOLS), array_values(self::REPLACED_SYMBOLS), $text);
+    }
 
     public function getHymnsByBookId(string $bookId, int $startNumber, int $endNumber): ResultDto
     {

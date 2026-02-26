@@ -9,12 +9,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class BookController extends Controller
 {
-    private BookService $bookService;
-
-    public function __construct(BookService $bookService)
-    {
-        $this->bookService = $bookService;
-    }
+    public function __construct(
+        private readonly BookService $bookService,
+    ) {}
 
     #[Route("/api/v1/books", name: "books.getBooks", methods: ["GET"])]
     public function getBooks(): Response

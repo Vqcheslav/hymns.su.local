@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Hymn;
 use App\Entity\Verse;
+use App\Service\HymnService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -19,6 +20,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
 class VerseCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly HymnService $hymnService,
+    ) {}
+
     public static function getEntityFqcn(): string
     {
         return Verse::class;
@@ -66,6 +71,9 @@ class VerseCrudController extends AbstractCrudController
         if ($hymn instanceof Hymn) {
             $hymn->setUpdatedAt(new DateTimeImmutable());
             $entityManager->persist($hymn);
+
+            $lyrics = $this->hymnService->replaceInvalidSymbols($entityInstance->getLyrics(), $hymn->getCategory());
+            $entityInstance->setLyrics($lyrics);
         }
 
         $entityManager->persist($entityInstance);
