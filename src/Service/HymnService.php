@@ -39,6 +39,10 @@ class HymnService extends Service
         'c' => 'с',
         'C' => 'С',
         'ë' => 'ё',
+        '„' => '"',
+        '”' => '"',
+        '’' => '\'',
+        '`' => '\'',
     ];
 
     public function __construct(
