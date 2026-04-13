@@ -172,7 +172,7 @@
                                     ${ openedHymn.book_title || 'Hymn not found' }$
                                 </div>
                                 <div id="modalWindowSubtitle" class="m-0 small">
-                                    ${ ':: ' + (openedHymn.category || 'please close this window')  }$
+                                    ${ ':: ' + (openedHymn.category || 'please close this window') }$
                                 </div>
                             </div>
                         </div>
@@ -227,11 +227,12 @@
     <script src="{{ asset('js/vendor/nosleep.js') }}"></script>
     <script type="module">
         import Pagination from '/js/vue/Pagination.js?version=1'
+
         const { createApp, ref, watch, useTemplateRef } = Vue
 
         createApp({
             components: {
-                Pagination
+                Pagination,
             },
             delimiters: ['${', '}$'],
             mounted () {
@@ -452,7 +453,20 @@
                     for (let hymn of responseJson.data) {
                         for (let word of search.split(' ')) {
                             hymn.number = mark(hymn.number, word)
-                            hymn.verses[0].lyrics = mark(hymn.verses[0].lyrics, word)
+
+                            if (hymn.verses.length > 0) {
+                                hymn.verses[0].lyrics = mark(hymn.verses[0].lyrics, word)
+                            } else {
+                                hymn.verses = [
+                                    {
+                                        verse_id: 0,
+                                        position: 1,
+                                        lyrics: 'Нет текста',
+                                        is_chorus: false,
+                                        chords: '',
+                                    },
+                                ]
+                            }
                         }
 
                         hymns.push(hymn)
