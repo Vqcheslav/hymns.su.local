@@ -64,12 +64,7 @@ class HymnCrudController extends AbstractCrudController
                 ->setLabel('Hymn Id')
                 ->setDisabled()
                 ->hideWhenCreating(),
-            AssociationField::new('book', 'Book Id')
-                ->setQueryBuilder(function (QueryBuilder $queryBuilder) {
-                    return $queryBuilder
-                        ->where("entity.bookId in ('custom', 'songbook-demyansk')")
-                        ->orderBy('entity.bookId');
-                }),
+            AssociationField::new('book', 'Book Id'),
             IntegerField::new('number')
                 ->hideWhenCreating(),
             TextField::new('title')
