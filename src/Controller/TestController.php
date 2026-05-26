@@ -7,6 +7,7 @@ use App\Service\BookService;
 use App\Service\HymnService;
 use App\Service\VerseService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
@@ -23,6 +24,14 @@ class TestController extends Controller
         private readonly VerseService $verseService,
         private readonly EntityManagerInterface $entityManager,
     ) {}
+
+    #[Route("/test/sentry", name: "test.sentry", methods: ["GET"])]
+    public function testSentry(): JsonResponse
+    {
+        $lastEventId = \Sentry\captureException(new \RuntimeException('Test exception for Sentry'));
+
+        return $this->jsonResponse($lastEventId !== null, ['last_event_id' => (string) $lastEventId], 'Sentry test');
+    }
 
     #[Route("/test/fix/russian/{index}", name: "test.fix_russian_songs", methods: ["GET"])]
     public function fixRussianVerses(int $index = 0): Response
@@ -56,7 +65,11 @@ class TestController extends Controller
         $this->entityManager->flush();
         $fixedVerseIds = array_values(array_unique($fixedVerseIds));
 
-        return $this->jsonResponse(true, $fixedVerseIds, 'Successfully fixed invalid symbol (and other): ' . $searchInvalidSymbol);
+        return $this->jsonResponse(
+            true,
+            $fixedVerseIds,
+            'Successfully fixed invalid symbol (and other): ' . $searchInvalidSymbol,
+        );
     }
 
     #[Route("/test/get-json/{bookId}/{filename}/{startHymnNumber}", name: "test.getJson", methods: ["GET"])]
