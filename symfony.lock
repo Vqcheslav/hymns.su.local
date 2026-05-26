@@ -11,6 +11,15 @@
             "config/routes/annotations.yaml"
         ]
     },
+    "doctrine/deprecations": {
+        "version": "1.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "fdd756167454623e21f1d769c5b814b243782a67"
+        }
+    },
     "doctrine/doctrine-bundle": {
         "version": "2.8",
         "recipe": {
@@ -60,6 +69,15 @@
             "phpunit.xml.dist",
             "tests/bootstrap.php"
         ]
+    },
+    "sentry/sentry-symfony": {
+        "version": "5.10",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "5.0",
+            "ref": "aac2bc5220e9ab5b9e3838a7a4da90e7f74e6148"
+        }
     },
     "symfony/console": {
         "version": "5.4",

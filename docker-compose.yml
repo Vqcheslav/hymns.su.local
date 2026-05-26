@@ -12,6 +12,8 @@ services:
             - "./:/var/www/hymns.vq.local/"
         links:
             - php-fpm
+        volumes_from:
+            - php-fpm
 
     php-fpm:
         build: ./.docker/php-fpm
