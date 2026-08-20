@@ -8,7 +8,7 @@
                 width="30"
                 height="30"
             >
-            Гимны
+            Псалма — Гимны
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,6 +28,20 @@
                     href="{{ path('api.docs') }}"
                 >
                     Документация
+                </a>
+                <a
+                    class="nav-link"
+                    href="https://play.google.com/store/apps/details?id=dev.noga.psalma"
+                    target="_blank"
+                >
+                    Приложение на Android
+                </a>
+                <a
+                    class="nav-link"
+                    href="https://apps.apple.com/ru/app/psalma/id6762844768"
+                    target="_blank"
+                >
+                    Приложение на iOS
                 </a>
                 <a
                     class="nav-link {{ currentRouteName is same as('admin') ? 'active' : '' }}"

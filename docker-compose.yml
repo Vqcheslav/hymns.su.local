@@ -35,7 +35,6 @@ services:
             - "./.docker/mysql/logs/:/var/log/mysql/"
 #            - "./.docker/mysql/data/:/var/lib/mysql/"
             - "./.docker/mysql/setup.sql:/docker-entrypoint-initdb.d/1.sql"
-#        command: --mysql-native-password=ON
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: false
             MYSQL_ROOT_USER: root
