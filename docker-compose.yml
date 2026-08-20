@@ -9,7 +9,7 @@ services:
             - "../certificates/:/var/www/certificates/:ro"
             - "./.docker/nginx/local.conf:/etc/nginx/conf.d/local.conf"
             - "./.docker/nginx/logs/:/var/log/nginx/"
-            - "./:/var/www/hymns.vq.local/"
+            - "./:/var/www/psalma.vq.local/"
         links:
             - php-fpm
         volumes_from:
@@ -21,14 +21,14 @@ services:
             - "./.docker/php-fpm/local.ini:/usr/local/etc/php/conf.d/40-local.ini"
             - "./.docker/php-fpm/fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
             - "./.docker/php-fpm/logs/:/var/log/"
-            - "./:/var/www/hymns.vq.local/"
+            - "./:/var/www/psalma.vq.local/"
         links:
             - mysql
             - redis
 
     mysql:
         image: mysql:8
-        hostname: hymns.vq.local
+        hostname: psalma.vq.local
         ports:
             - "3306:3306"
         volumes:
@@ -38,14 +38,14 @@ services:
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: false
             MYSQL_ROOT_USER: root
-            MYSQL_ROOT_PASSWORD: hymns_Root_Pass
-            MYSQL_DATABASE: hymns_db
-            MYSQL_USER: hymns_user
-            MYSQL_PASSWORD: hymns_Pass
+            MYSQL_ROOT_PASSWORD: psalma_Root_Pass
+            MYSQL_DATABASE: psalma_db
+            MYSQL_USER: psalma_user
+            MYSQL_PASSWORD: psalma_Pass
 
     redis:
         image: redis:7-alpine
-        hostname: hymns.vq.local
+        hostname: psalma.vq.local
         ports:
             - "6379:6379"
         volumes:
