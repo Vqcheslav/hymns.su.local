@@ -22,6 +22,8 @@ services:
             - "./.docker/php-fpm/fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
             - "./.docker/php-fpm/logs/:/var/log/"
             - "./:/var/www/psalma.vq.local/"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         links:
             - mysql
             - redis
