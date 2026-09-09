@@ -2,3 +2,5 @@ sentry:
     dsn: '%env(SENTRY_DSN)%'
     options:
         environment: '%env(APP_ENV)%'
+        ignore_exceptions:
+            - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'
